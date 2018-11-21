@@ -1,0 +1,2 @@
+# easyGo
+A golang frame
