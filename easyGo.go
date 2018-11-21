@@ -1,9 +1,9 @@
 package easyGo
 
 import (
-	"easyGo/configure"
-	"easyGo/gracefulExit"
-	"easyGo/logging"
+	"github.com/xxlixin1993/easyGo/configure"
+	"github.com/xxlixin1993/easyGo/gracefulExit"
+	"github.com/xxlixin1993/easyGo/logging"
 
 	"flag"
 	"fmt"

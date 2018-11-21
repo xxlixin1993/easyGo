@@ -1,7 +1,7 @@
 package configure
 
 import (
-	"easyGo/utils"
+	"github.com/xxlixin1993/easyGo/utils"
 	"bufio"
 	"bytes"
 	"errors"
