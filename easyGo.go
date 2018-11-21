@@ -18,7 +18,7 @@ const (
 	KVersion = "0.0.1"
 )
 
-func run() {
+func Run() {
 	initFrame()
 
 	waitSignal()
