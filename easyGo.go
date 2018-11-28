@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"syscall"
 
+	"github.com/xxlixin1993/easyGo/orm/mysql"
 )
 
 const (
@@ -21,7 +22,7 @@ const (
 func Run() {
 	initFrame()
 
-	waitSignal()
+	//waitSignal()
 }
 
 // 初始化框架
@@ -48,6 +49,12 @@ func initFrame() {
 	if logErr != nil {
 		fmt.Printf("Initialize log error : %s", logErr)
 		os.Exit(configure.KInitLogError)
+	}
+
+	mysqlErr := mysql.InitDB()
+	if mysqlErr != nil {
+		fmt.Printf("Initialize mysql error : %s", mysqlErr)
+		os.Exit(configure.KInitMySQLError)
 	}
 
 	logging.Trace("Initialized frame")

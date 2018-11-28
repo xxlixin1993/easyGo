@@ -1,11 +1,11 @@
 package logging
 
 import (
+	"errors"
+	"fmt"
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
 	"github.com/xxlixin1993/easyGo/utils"
-	"errors"
-	"fmt"
 	"path"
 	"runtime"
 	"sync"

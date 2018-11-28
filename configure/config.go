@@ -1,11 +1,11 @@
 package configure
 
 import (
-	"github.com/xxlixin1993/easyGo/utils"
 	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/xxlixin1993/easyGo/utils"
 	"io"
 	"os"
 	"strconv"
@@ -33,6 +33,7 @@ type Config struct {
 const (
 	KInitConfigError = iota + 1
 	KInitLogError
+	KInitMySQLError
 )
 
 // 错误信息

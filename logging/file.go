@@ -1,11 +1,11 @@
 package logging
 
 import (
-	"github.com/xxlixin1993/easyGo/configure"
-	"github.com/xxlixin1993/easyGo/utils"
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/xxlixin1993/easyGo/configure"
+	"github.com/xxlixin1993/easyGo/utils"
 	"os"
 	"path/filepath"
 	"runtime"
