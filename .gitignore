@@ -2,3 +2,4 @@
 .DS_Store
 app.ini
 tests
+Gopkg.lock
