@@ -4,6 +4,7 @@ import (
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
 	"github.com/xxlixin1993/easyGo/logging"
+	"github.com/xxlixin1993/easyGo/orm/mysql"
 
 	"flag"
 	"fmt"
@@ -11,22 +12,15 @@ import (
 	"os/signal"
 	"runtime"
 	"syscall"
-
-	"github.com/xxlixin1993/easyGo/orm/mysql"
 )
 
 const (
 	KVersion = "0.0.1"
 )
 
-func Run() {
-	initFrame()
-
-	//waitSignal()
-}
 
 // 初始化框架
-func initFrame() {
+func InitFrame() {
 	runMode := flag.String("m", "local", "Use -m <config mode>")
 	configFile := flag.String("c", "./app.ini", "use -c <config file>")
 	version := flag.Bool("v", false, "Use -v <current version>")
@@ -60,8 +54,8 @@ func initFrame() {
 	logging.Trace("Initialized frame")
 }
 
-// waitSignal Wait signal
-func waitSignal() {
+// WaitSignal Wait signal
+func WaitSignal() {
 	sigChan := make(chan os.Signal)
 	signal.Notify(sigChan)
 
@@ -72,7 +66,10 @@ func waitSignal() {
 	switch sig {
 	case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
 		logging.Trace("exit...")
-		gracefulExit.GetExitList().Stop()
+		err := gracefulExit.GetExitList().Stop()
+		if err != nil {
+			fmt.Printf("gracefulExit error : %s", err)
+		}
 	case syscall.SIGUSR1:
 		logging.Trace("catch the signal SIGUSR1")
 	default:

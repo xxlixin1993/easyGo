@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"strconv"
 	"time"
+	"github.com/xxlixin1993/easyGo/gracefulExit"
 )
 
 var AllDB *allConnSet
@@ -20,6 +21,9 @@ const (
 	KReadMode  uint8 = 1
 	KWriteMode uint8 = 2
 )
+
+// 日志模块名
+const KMysqlModuleName = "mysqlModule"
 
 type (
 	allConnSet struct {
@@ -50,6 +54,31 @@ type (
 	}
 )
 
+// Implement ExitInterface
+func (allSet *allConnSet) GetModuleName() string {
+	return KMysqlModuleName
+}
+
+// Implement ExitInterface
+func (allSet *allConnSet) Stop() (err error) {
+	err = allSet.closeConnSet(allSet.writeSet)
+	err = allSet.closeConnSet(allSet.readSet)
+	return
+}
+
+func (allSet *allConnSet) closeConnSet(set map[string]*connSet) error {
+	for _, connSet := range set {
+		for _, conn := range connSet.set {
+			err := conn.dbConn.Close()
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 // 初始化数据库
 func InitDB() error {
 	AllDB = newConnAllSet()
@@ -66,6 +95,8 @@ func InitDB() error {
 		}
 	}
 
+	// 平滑退出
+	gracefulExit.GetExitList().Push(AllDB)
 	return nil
 }
 

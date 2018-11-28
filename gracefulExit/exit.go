@@ -43,17 +43,36 @@ func GetExitList() *ExitList {
 // 在最前面插入一个退出事件
 func (el *ExitList) UnShift(exitInterface ExitInterface) error {
 	if el.module == nil {
-		return errors.New("[Smoothly Exit] Pop: plz init ExitList first")
+		return errors.New("[gracefulExit] plz init ExitList first")
 	}
 
 	// Judge whether it exists or not
 	moduleName := exitInterface.GetModuleName()
 	if _, ok := el.module[moduleName]; ok {
-		return errors.New("[Smoothly Exit] Pop: this module(" + moduleName + ") name is exist")
+		return errors.New("[gracefulExit] this module(" + moduleName + ") name is exist")
 	}
 
 	// Add value
 	element := el.ll.PushFront(exitInterface)
+	el.module[moduleName] = element
+
+	return nil
+}
+
+// 在最后面插入一个退出事件
+func (el *ExitList) Push(exitInterface ExitInterface) error {
+	if el.module == nil {
+		return errors.New("[gracefulExit] plz init ExitList first")
+	}
+
+	// Judge whether it exists or not
+	moduleName := exitInterface.GetModuleName()
+	if _, ok := el.module[moduleName]; ok {
+		return errors.New("[gracefulExit] this module(" + moduleName + ") name is exist")
+	}
+
+	// Add value
+	element := el.ll.PushBack(exitInterface)
 	el.module[moduleName] = element
 
 	return nil
@@ -72,7 +91,7 @@ func (el *ExitList) Stop() error {
 		exitElement := element.Value.(ExitInterface)
 
 		if err := exitElement.Stop(); err != nil {
-			errInfo = append(errInfo, "[Smoothly Exit]: Stop this module("+exitElement.GetModuleName()+")"+err.Error())
+			errInfo = append(errInfo, "[gracefulExit]: Stop this module("+exitElement.GetModuleName()+")"+err.Error())
 		}
 
 		el.ll.Remove(element)
