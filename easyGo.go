@@ -18,6 +18,12 @@ const (
 	KVersion = "0.0.1"
 )
 
+// TODO
+func RunHTTP() {
+	InitFrame()
+
+	WaitSignal()
+}
 
 // 初始化框架
 func InitFrame() {
