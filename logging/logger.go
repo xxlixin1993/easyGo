@@ -108,7 +108,7 @@ func createLogger(outputType string, level int) (*LogBase, error) {
 		}
 		return loggerInstance, nil
 	default:
-		return nil, errors.New(configure.KUnknownTypeMsg)
+		return nil, errors.New("unknown type")
 	}
 }
 

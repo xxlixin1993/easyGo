@@ -1,39 +1,31 @@
 package mysql
 
 import (
-	"errors"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/xxlixin1993/easyGo/configure"
 	"math/rand"
 	"strconv"
 	"time"
+	"errors"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
 )
 
-var AllDB *allConnSet
+var allDB *mysqlPool
 
-// 读写两种模式
-var modes = [2]string{"read", "write"}
-
-// 读写分离类型常量
-const (
-	KReadMode  uint8 = 1
-	KWriteMode uint8 = 2
-)
-
-// 日志模块名
+// mysql模块名
 const KMysqlModuleName = "mysqlModule"
 
 type (
-	allConnSet struct {
-		// key是数据库名 ex:first
+	mysqlPool struct {
+		// key是数据库名 ex:mysql_first
 		readSet  map[string]*connSet
 		writeSet map[string]*connSet
 	}
 
 	connSet struct {
-		// ex:first
+		// ex:mysql_first
 		name string
 		set  []*connection
 		// set的长度
@@ -54,19 +46,41 @@ type (
 	}
 )
 
+// 初始化数据库
+func InitDB() error {
+	allDB = newMysqlPool()
+	mysqlNames := configure.DefaultStrings("mysql.names", []string{})
+	if len(mysqlNames) > 0 {
+		for _, mysqlName := range mysqlNames {
+			for _, mode := range configure.Modes {
+				err := allDB.connect(mysqlName, mode)
+				if err != nil {
+					return err
+				}
+			}
+
+		}
+	}
+
+	// 平滑退出
+	gracefulExit.GetExitList().Push(allDB)
+	return nil
+}
+
 // Implement ExitInterface
-func (allSet *allConnSet) GetModuleName() string {
+func (mp *mysqlPool) GetModuleName() string {
 	return KMysqlModuleName
 }
 
 // Implement ExitInterface
-func (allSet *allConnSet) Stop() (err error) {
-	err = allSet.closeConnSet(allSet.writeSet)
-	err = allSet.closeConnSet(allSet.readSet)
+func (mp *mysqlPool) Stop() (err error) {
+	err = mp.closeConnSet(mp.writeSet)
+	err = mp.closeConnSet(mp.readSet)
 	return
 }
 
-func (allSet *allConnSet) closeConnSet(set map[string]*connSet) error {
+// 关闭一个ConnSet的所有链接
+func (mp *mysqlPool) closeConnSet(set map[string]*connSet) error {
 	for _, connSet := range set {
 		for _, conn := range connSet.set {
 			err := conn.dbConn.Close()
@@ -79,100 +93,47 @@ func (allSet *allConnSet) closeConnSet(set map[string]*connSet) error {
 	return nil
 }
 
-// 初始化数据库
-func InitDB() error {
-	AllDB = newConnAllSet()
-	mysqlNames := configure.DefaultStrings("mysql.names", []string{})
-	if len(mysqlNames) > 0 {
-		for _, mysqlName := range mysqlNames {
-			for _, mode := range modes {
-				err := AllDB.connect(mysqlName, mode)
-				if err != nil {
-					return err
-				}
-			}
-
-		}
-	}
-
-	// 平滑退出
-	gracefulExit.GetExitList().Push(AllDB)
-	return nil
-}
-
-func newConnAllSet() *allConnSet {
-	return &allConnSet{
-		readSet:  make(map[string]*connSet),
-		writeSet: make(map[string]*connSet),
-	}
-}
-
 // 连接配置文件中的数据库
-func (allSet *allConnSet) connect(mysqlName string, mode string) error {
+func (mp *mysqlPool) connect(mysqlName string, mode string) error {
 	modeCount := configure.DefaultInt(mysqlName+"."+mode+".count", 0)
 	if modeCount == 0 {
 		return errors.New("[orm] mysql mode count is empty")
 	}
 
-	modeType := KReadMode
-	if mode == modes[1] {
-		modeType = KWriteMode
+	modeType := configure.KReadMode
+	if mode == configure.Modes[1] {
+		modeType = configure.KWriteMode
 	}
 
 	connReadSet := newConnSet(mysqlName, modeCount)
 	connWriteSet := newConnSet(mysqlName, modeCount)
 	for index := 1; index <= modeCount; index++ {
 		indexStr := strconv.Itoa(index)
-		dsn := configure.DefaultString(mysqlName+"."+mode+"."+indexStr+".dsn", "")
-		if dsn == "" {
-			return errors.New("[orm] mysql dsn is empty")
-		}
 
-		maxIdleConns := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_idle_conn", 10)
-		maxOpenConns := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_open_conn", 100)
-		maxLifetime := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_life_time", 300)
-
-		conn, err := gorm.Open("mysql", dsn)
+		mysqlConn, err := newConnection(mysqlName, mode, indexStr, modeType)
 		if err != nil {
 			return err
 		}
-		// 设置闲置的连接数
-		conn.DB().SetMaxIdleConns(maxIdleConns)
-		// 设置最大打开的连接数
-		conn.DB().SetMaxOpenConns(maxOpenConns)
-		// 设置连接可被重新使用的最大时间间隔。如果超时，则连接会在重新使用前被关闭。
-		conn.DB().SetConnMaxLifetime(time.Duration(maxLifetime) * time.Second)
 
-		// connection.LogMode(true)
-
-		mysqlConn := &connection{
-			name:         mysqlName + ":" + mode + ":" + indexStr,
-			dsn:          dsn,
-			maxIdleConns: maxIdleConns,
-			maxOpenConns: maxOpenConns,
-			mode:         modeType,
-			dbConn:       conn,
-		}
-
-		if modeType == KReadMode {
+		if modeType == configure.KReadMode {
 			connReadSet.set = append(connReadSet.set, mysqlConn)
 		} else {
 			connWriteSet.set = append(connWriteSet.set, mysqlConn)
 		}
 	}
 
-	if modeType == KReadMode {
-		allSet.readSet[mysqlName] = connReadSet
+	if modeType == configure.KReadMode {
+		mp.readSet[mysqlName] = connReadSet
 	} else {
-		allSet.writeSet[mysqlName] = connWriteSet
+		mp.writeSet[mysqlName] = connWriteSet
 	}
 
 	return nil
 }
 
 // 获取一个slave的链接
-func (allSet *allConnSet) GetSlaveConn(mysqlName string) (*gorm.DB, error) {
-	if connSet, ok := allSet.readSet[mysqlName]; ok {
+func (mp *mysqlPool) getSlaveConn(mysqlName string) (*gorm.DB, error) {
+	if connSet, ok := mp.readSet[mysqlName]; ok {
 		return connSet.set[rand.Intn(connSet.count)].dbConn, nil
 	}
 
@@ -180,12 +141,54 @@ func (allSet *allConnSet) GetSlaveConn(mysqlName string) (*gorm.DB, error) {
 }
 
 // 获取一个master的链接
-func (allSet *allConnSet) GetMasterConn(mysqlName string) (*gorm.DB, error) {
-	if connSet, ok := allSet.writeSet[mysqlName]; ok {
+func (mp *mysqlPool) getMasterConn(mysqlName string) (*gorm.DB, error) {
+	if connSet, ok := mp.writeSet[mysqlName]; ok {
 		return connSet.set[rand.Intn(connSet.count)].dbConn, nil
 	}
 
 	return nil, errors.New("[orm] cant find write connection")
+}
+
+func newMysqlPool() *mysqlPool {
+	return &mysqlPool{
+		readSet:  make(map[string]*connSet),
+		writeSet: make(map[string]*connSet),
+	}
+}
+
+func newConnection(mysqlName string, mode string, indexStr string, modeType uint8) (*connection, error) {
+	dsn := configure.DefaultString(mysqlName+"."+mode+"."+indexStr+".dsn", "")
+	if dsn == "" {
+		return nil, errors.New("[orm] mysql dsn is empty")
+	}
+
+	maxIdleConns := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_idle_conn", 10)
+	maxOpenConns := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_open_conn", 100)
+	maxLifetime := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_life_time", 300)
+
+	conn, err := gorm.Open("mysql", dsn)
+	if err != nil {
+		return nil, err
+	}
+	// 设置闲置的连接数
+	conn.DB().SetMaxIdleConns(maxIdleConns)
+	// 设置最大打开的连接数
+	conn.DB().SetMaxOpenConns(maxOpenConns)
+	// 设置连接可被重新使用的最大时间间隔。如果超时，则连接会在重新使用前被关闭。
+	conn.DB().SetConnMaxLifetime(time.Duration(maxLifetime) * time.Second)
+
+	// connection.LogMode(true)
+
+	mysqlConn := &connection{
+		name:         mysqlName + ":" + mode + ":" + indexStr,
+		dsn:          dsn,
+		maxIdleConns: maxIdleConns,
+		maxOpenConns: maxOpenConns,
+		mode:         modeType,
+		dbConn:       conn,
+	}
+
+	return mysqlConn, nil
 }
 
 func newConnSet(name string, modeCount int) *connSet {
@@ -194,4 +197,14 @@ func newConnSet(name string, modeCount int) *connSet {
 		set:   []*connection{},
 		count: modeCount,
 	}
+}
+
+// 随机获取从库链接
+func GetSlaveConn(mysqlName string) (*gorm.DB, error) {
+	return allDB.getSlaveConn(mysqlName)
+}
+
+// 随机获取主库链接
+func GetMasterConn(mysqlName string) (*gorm.DB, error) {
+	return allDB.getMasterConn(mysqlName)
 }
