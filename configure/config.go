@@ -29,18 +29,6 @@ type Config struct {
 	data map[string]map[string]string
 }
 
-// 错误码
-const (
-	KInitConfigError = iota + 1
-	KInitLogError
-	KInitMySQLError
-)
-
-// 错误信息
-const (
-	KUnknownTypeMsg = "unknown type"
-)
-
 // 初始化配置
 func InitConfig(filePath string, mod string) error {
 	if !utils.FileExists(filePath) {

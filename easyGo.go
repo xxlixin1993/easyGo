@@ -1,17 +1,18 @@
 package easyGo
 
 import (
-	"github.com/xxlixin1993/easyGo/configure"
-	"github.com/xxlixin1993/easyGo/gracefulExit"
-	"github.com/xxlixin1993/easyGo/logging"
-	"github.com/xxlixin1993/easyGo/orm/mysql"
-
 	"flag"
 	"fmt"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
+
+	"github.com/xxlixin1993/easyGo/configure"
+	"github.com/xxlixin1993/easyGo/gracefulExit"
+	"github.com/xxlixin1993/easyGo/logging"
+	"github.com/xxlixin1993/easyGo/orm/mysql"
+	"github.com/xxlixin1993/easyGo/cache"
 )
 
 const (
@@ -19,10 +20,8 @@ const (
 )
 
 // TODO
-func RunHTTP() {
-	InitFrame()
+func InitHTTP() {
 
-	WaitSignal()
 }
 
 // 初始化框架
@@ -51,13 +50,24 @@ func InitFrame() {
 		os.Exit(configure.KInitLogError)
 	}
 
+	logging.Trace("Initialized frame")
+}
+
+// 初始化mysql
+func InitMysql() {
 	mysqlErr := mysql.InitDB()
 	if mysqlErr != nil {
 		fmt.Printf("Initialize mysql error : %s", mysqlErr)
 		os.Exit(configure.KInitMySQLError)
 	}
+}
 
-	logging.Trace("Initialized frame")
+func InitRedis() {
+	redisErr := cache.InitRedis()
+	if redisErr != nil {
+		fmt.Printf("Initialize redis error : %s", redisErr)
+		os.Exit(configure.KInitRedisError)
+	}
 }
 
 // WaitSignal Wait signal
