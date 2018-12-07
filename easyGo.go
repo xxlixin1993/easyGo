@@ -68,8 +68,8 @@ func InitRedis() {
 }
 
 // 初始化http
-func InitHTTP() {
-	server.InitHTTPServer()
+func InitHTTP(easyServer *server.EasyServer) {
+	server.InitHTTPServer(easyServer)
 }
 
 // WaitSignal Wait signal

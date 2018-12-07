@@ -24,7 +24,8 @@ type EasyServer struct {
 	httpServer     *http.Server
 	dispatchRouter func(engine *gin.Engine)
 	recover        func() gin.HandlerFunc
-	notFoundRouter func(engine *gin.Context)
+	notFoundRouter func(c *gin.Context)
+	logger         func() gin.HandlerFunc
 }
 
 // GetModuleName Implement ExitInterface
@@ -41,16 +42,17 @@ func (easyServer *EasyServer) Stop() error {
 }
 
 // 初始化
-func InitHTTPServer() {
-	easyServer := newEasyServer()
+func InitHTTPServer(easyServer *EasyServer) {
+	if easyServer == nil {
+		easyServer = NewEasyServer()
+	}
 	easyServer.setHTTPServer(easyServer.getGinEngine())
 	gracefulExit.GetExitList().UnShift(easyServer)
 	go easyServer.listenAndServe()
-
 }
 
 // TODO dispatchRouter recover notFoundRouter
-func newEasyServer() *EasyServer {
+func NewEasyServer() *EasyServer {
 	host := configure.DefaultString("http.host", "")
 	port := configure.DefaultString("http.port", "")
 	readTimeout := configure.DefaultInt("http.read_timeout", 4)
@@ -76,7 +78,9 @@ func (easyServer *EasyServer) setHTTPServer(engine *gin.Engine) {
 // 获取Gin引擎
 func (easyServer *EasyServer) getGinEngine() *gin.Engine {
 	mode := configure.DefaultString("http.mode", "release")
-	gin.SetMode(mode)
+	if mode == gin.ReleaseMode {
+		gin.SetMode(mode)
+	}
 	engine := gin.New()
 
 	if easyServer.recover == nil {
@@ -89,10 +93,15 @@ func (easyServer *EasyServer) getGinEngine() *gin.Engine {
 		}
 	}
 
+	if easyServer.logger == nil {
+		easyServer.logger = easyServer.defaultLogger
+	}
+
 	if easyServer.dispatchRouter == nil {
 		easyServer.dispatchRouter = easyServer.defaultDispatchRouter
 	}
 
+	engine.Use(easyServer.defaultLogger(), easyServer.recover())
 	easyServer.dispatchRouter(engine)
 
 	return engine
@@ -133,6 +142,32 @@ func (easyServer *EasyServer) defaultRecover() gin.HandlerFunc {
 			}
 		}()
 		c.Next()
+	}
+}
+
+// 默认日志
+func (easyServer *EasyServer) defaultLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 开始时间
+		start := time.Now()
+		// 处理请求
+		c.Next()
+		// 结束时间
+		end := time.Now()
+		//执行时间
+		latency := end.Sub(start)
+
+		path := c.Request.URL.Path
+
+		clientIP := c.ClientIP()
+		method := c.Request.Method
+		statusCode := c.Writer.Status()
+		logging.InfoF("| %3d | %13v | %15s | %s  %s |",
+			statusCode,
+			latency,
+			clientIP,
+			method, path,
+		)
 	}
 }
 
