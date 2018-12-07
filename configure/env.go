@@ -10,6 +10,21 @@ const (
 	KInitLogError
 	KInitMySQLError
 	KInitRedisError
+	KInitHTTPError
+)
+
+const (
+	// mysql模块名
+	KMysqlModuleName = "mysqlModule"
+
+	// 日志模块名
+	KLogModuleName = "logModule"
+
+	// redis模块名
+	KRedisModuleName = "redisModule"
+
+	// http server模块名
+	KHTTPModuleName = "httpModule"
 )
 
 // 读写两种模式

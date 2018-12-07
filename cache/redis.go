@@ -13,8 +13,6 @@ import (
 
 var pool *redisPool
 
-const KRedisModuleName = "redisModule"
-
 type (
 	redisPool struct {
 		// key是redis名 ex:redis_first
@@ -62,7 +60,7 @@ func InitRedis() error {
 
 // Implement ExitInterface
 func (rp *redisPool) GetModuleName() string {
-	return KRedisModuleName
+	return configure.KRedisModuleName
 }
 
 // Implement ExitInterface

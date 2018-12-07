@@ -22,8 +22,6 @@ const (
 	KLevelDebug
 )
 
-// 日志模块名
-const KLogModuleName = "logModule"
 
 // 日志输出等级
 var LevelName = [7]string{"F", "E", "W", "N", "I", "T", "D"}
@@ -60,7 +58,7 @@ type LogBase struct {
 
 // Implement ExitInterface
 func (l *LogBase) GetModuleName() string {
-	return KLogModuleName
+	return configure.KLogModuleName
 }
 
 // Implement ExitInterface
