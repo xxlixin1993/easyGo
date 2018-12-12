@@ -83,7 +83,7 @@ redis_first.read.count = 2
 redis_first.write.count = 2
 
 redis_first.read.1.addr = 127.0.0.1:6379
-redis_first.read.1.password = 123
+redis_first.read.1.password =
 redis_first.read.1.max_idle_conn = 10
 redis_first.read.1.max_timeout = 300
 redis_first.read.1.max_open_conn = 200

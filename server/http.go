@@ -101,16 +101,16 @@ func (easyServer *EasyServer) getGinEngine() *gin.Engine {
 		easyServer.dispatchRouter = easyServer.defaultDispatchRouter
 	}
 
-	engine.Use(easyServer.defaultLogger(), easyServer.recover())
+	engine.Use(easyServer.logger(), easyServer.recover())
 	easyServer.dispatchRouter(engine)
 
 	return engine
 }
 
 // 监听
-func (easyServer *EasyServer) listenAndServe() {
+func (easyServer *EasyServer) listenAndServe(){
 	if err := easyServer.httpServer.ListenAndServe(); err != nil {
-		logging.Fatal("start error", err)
+		logging.ErrorF("[http] listenAndServe server err:(%s)", err)
 	}
 }
 
@@ -137,7 +137,7 @@ func (easyServer *EasyServer) defaultRecover() gin.HandlerFunc {
 					// 	Body:    report,
 					// })
 				}
-				logging.FatalF("[Recovery] panic recovered:\n%s", report)
+				logging.FatalF("[http server] recovery panic recovered:\n%s", report)
 				c.AbortWithStatus(500)
 			}
 		}()
