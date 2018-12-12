@@ -14,8 +14,7 @@ import (
 
 var allDB *mysqlPool
 
-// mysql模块名
-const KMysqlModuleName = "mysqlModule"
+
 
 type (
 	mysqlPool struct {
@@ -63,13 +62,13 @@ func InitDB() error {
 	}
 
 	// 平滑退出
-	gracefulExit.GetExitList().Push(allDB)
+	gracefulExit.GetExitList().UnShift(allDB)
 	return nil
 }
 
 // Implement ExitInterface
 func (mp *mysqlPool) GetModuleName() string {
-	return KMysqlModuleName
+	return configure.KMysqlModuleName
 }
 
 // Implement ExitInterface

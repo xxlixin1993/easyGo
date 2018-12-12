@@ -1,11 +1,11 @@
 [local]
 app.log_name = app.log
-; Server type
-;   http
-;   tcp
-server.support = http
-host = 0.0.0.0
-port = 12345
+
+; HTTP mode
+; debug,release,test
+http.mode = debug
+http.host = 0.0.0.0
+http.port = 12345
 http.read_timeout = 3
 http.write_timeout = 3
 http.quit_timeout = 30
@@ -27,65 +27,87 @@ log.output = stdout
 ; LevelDebug
 log.level = 7
 
-; Redis Setting
-redis.polar_bear = 172.18.35.242:6379
-redis.max_idle_conn = 300
-redis.max_active_conn = 300
-redis.idle_timeout = 10
-redis.max_conn_life_time = 180
-redis.password =
 
-
+; MySQL Config
 ; dsn ex: <user>:<password>/<database>?charset=utf8&parseTime=True&loc=Local
 ; Only support for master and salve mode, so a single machine also needs to be configured into this mode.
-mysql.names = first,second
-first.read.count = 2
-first.write.count = 2
+mysql.names = mysql_first,mysql_second
 
-first.read.1.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
-first.read.1.max_idle_conn = 10
-first.read.1.max_timeout = 300
-first.read.1.max_open_conn = 200
+mysql_first.read.count = 2
+mysql_first.write.count = 2
 
-first.read.2.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
-first.read.2.max_idle_conn = 10
-first.read.2.max_timeout = 300
-first.read.2.max_open_conn = 200
+mysql_first.read.1.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
+mysql_first.read.1.max_idle_conn = 10
+mysql_first.read.1.max_timeout = 300
+mysql_first.read.1.max_open_conn = 200
 
-first.write.1.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
-first.write.1.max_idle_conn = 10
-first.write.1.max_timeout = 300
-first.write.1.max_open_conn = 200
+mysql_first.read.2.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
+mysql_first.read.2.max_idle_conn = 10
+mysql_first.read.2.max_timeout = 300
+mysql_first.read.2.max_open_conn = 200
 
-first.write.2.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
-first.write.2.max_idle_conn = 10
-first.write.2.max_life_time = 300
-first.write.2.max_open_conn = 200
+mysql_first.write.1.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
+mysql_first.write.1.max_idle_conn = 10
+mysql_first.write.1.max_timeout = 300
+mysql_first.write.1.max_open_conn = 200
+
+mysql_first.write.2.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
+mysql_first.write.2.max_idle_conn = 10
+mysql_first.write.2.max_life_time = 300
+mysql_first.write.2.max_open_conn = 200
 
 
 
-second.read.count = 2
-second.write.count = 2
+mysql_second.read.count = 2
+mysql_second.write.count = 1
 
-second.read.1.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
-second.read.1.max_idle_conn = 10
-second.read.1.max_timeout = 300
-second.read.1.max_open_conn = 200
+mysql_second.read.1.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
+mysql_second.read.1.max_idle_conn = 10
+mysql_second.read.1.max_timeout = 300
+mysql_second.read.1.max_open_conn = 200
 
-second.read.2.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
-second.read.2.max_idle_conn = 10
-second.read.2.max_timeout = 300
-second.read.2.max_open_conn = 200
+mysql_second.read.2.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
+mysql_second.read.2.max_idle_conn = 10
+mysql_second.read.2.max_timeout = 300
+mysql_second.read.2.max_open_conn = 200
 
-second.write.1.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
-second.write.1.max_idle_conn = 10
-second.write.1.max_timeout = 300
-second.write.1.max_open_conn = 200
+mysql_second.write.1.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
+mysql_second.write.1.max_idle_conn = 10
+mysql_second.write.1.max_timeout = 300
+mysql_second.write.1.max_open_conn = 200
 
-second.write.2.dsn = lixin:123456@tcp(127.0.0.1:33060)/test?charset=utf8mb4&parseTime=True&loc=Local
-second.write.2.max_idle_conn = 10
-second.write.2.max_timeout = 300
-second.write.2.max_open_conn = 200
+; Redis Config
+redis.names = redis_first
+
+redis_first.read.count = 2
+redis_first.write.count = 2
+
+redis_first.read.1.addr = 127.0.0.1:6379
+redis_first.read.1.password =
+redis_first.read.1.max_idle_conn = 10
+redis_first.read.1.max_timeout = 300
+redis_first.read.1.max_open_conn = 200
+
+redis_first.read.2.addr = 127.0.0.1:6379
+redis_first.read.2.password =
+redis_first.read.2.max_idle_conn = 10
+redis_first.read.2.max_timeout = 300
+redis_first.read.2.max_open_conn = 200
+
+redis_first.write.1.addr = 127.0.0.1:6379
+redis_first.write.1.password =
+redis_first.write.1.max_idle_conn = 10
+redis_first.write.1.max_timeout = 300
+redis_first.write.1.max_open_conn = 200
+
+redis_first.write.2.addr = 127.0.0.1:6379
+redis_first.write.2.password =
+redis_first.write.2.max_idle_conn = 10
+redis_first.write.2.max_idle_timeout = 200
+redis_first.write.2.max_life_timeout = 300
+redis_first.write.2.max_open_conn = 200
+
+
 
 
 
@@ -95,7 +117,7 @@ second.write.2.max_open_conn = 200
 
 
 [dev]
-app.log_name = game.log
+app.log_name = app.log
 ; Server type
 ;   http
 ;   tcp
@@ -122,7 +144,7 @@ log.output = file
 log.level = 7
 
 [online]
-app.log_name = game.log
+app.log_name = app.log
 ; Server type
 ;   http
 ;   tcp

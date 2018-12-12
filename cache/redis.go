@@ -4,16 +4,14 @@ import (
 	"errors"
 	"time"
 	"strconv"
-
-	"github.com/xxlixin1993/easyGo/configure"
-	redigo "github.com/gomodule/redigo/redis"
 	"math/rand"
 
+	"github.com/xxlixin1993/easyGo/configure"
+	"github.com/xxlixin1993/easyGo/gracefulExit"
+	redigo "github.com/gomodule/redigo/redis"
 )
 
 var pool *redisPool
-
-const KRedisModuleName = "redisModule"
 
 type (
 	redisPool struct {
@@ -57,12 +55,15 @@ func InitRedis() error {
 		}
 	}
 
+	// 平滑退出
+	gracefulExit.GetExitList().UnShift(pool)
+
 	return nil
 }
 
 // Implement ExitInterface
 func (rp *redisPool) GetModuleName() string {
-	return KRedisModuleName
+	return configure.KRedisModuleName
 }
 
 // Implement ExitInterface

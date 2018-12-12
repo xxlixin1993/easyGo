@@ -13,16 +13,12 @@ import (
 	"github.com/xxlixin1993/easyGo/logging"
 	"github.com/xxlixin1993/easyGo/orm/mysql"
 	"github.com/xxlixin1993/easyGo/cache"
+	"github.com/xxlixin1993/easyGo/server"
 )
 
 const (
 	KVersion = "0.0.1"
 )
-
-// TODO
-func InitHTTP() {
-
-}
 
 // 初始化框架
 func InitFrame() {
@@ -62,12 +58,18 @@ func InitMysql() {
 	}
 }
 
+// 初始化redis
 func InitRedis() {
 	redisErr := cache.InitRedis()
 	if redisErr != nil {
 		fmt.Printf("Initialize redis error : %s", redisErr)
 		os.Exit(configure.KInitRedisError)
 	}
+}
+
+// 初始化http
+func InitHTTP(easyServer *server.EasyServer) {
+	server.InitHTTPServer(easyServer)
 }
 
 // WaitSignal Wait signal
