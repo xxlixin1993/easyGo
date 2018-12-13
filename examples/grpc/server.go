@@ -26,6 +26,8 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 
 func InitGRPC(){
 	rpcServer := &rpc.Server{}
+	// grpclog.SetLoggerV2()
+	// TODO grpc日志
 	rpc.InitGRPC(rpcServer)
 	pb.RegisterGreeterServer(rpcServer.GetServer(), &server{})
 	go rpcServer.ListenAndServe()

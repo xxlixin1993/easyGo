@@ -1,8 +1,8 @@
 [local]
-app.log_name = app.log
+app.log_name = appLog
 
-; HTTP mode
-; debug,release,test
+; HTTP Config
+; mode : debug,release,test
 http.mode = debug
 http.host = 0.0.0.0
 http.port = 12345
@@ -26,6 +26,12 @@ log.output = stdout
 ; LevelTrace
 ; LevelDebug
 log.level = 7
+
+; GRPC Config
+; The network must be "tcp", "tcp4", "tcp6", "unix" or "unixpacket".
+; address is ip:port
+network = tcp
+address = 0.0.0.0:50051
 
 
 ; MySQL Config
