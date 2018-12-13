@@ -56,9 +56,7 @@ func InitRedis() error {
 	}
 
 	// 平滑退出
-	gracefulExit.GetExitList().UnShift(pool)
-
-	return nil
+	return gracefulExit.GetExitList().UnShift(pool)
 }
 
 // Implement ExitInterface

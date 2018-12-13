@@ -51,7 +51,6 @@ func InitHTTPServer(easyServer *EasyServer) {
 	go easyServer.listenAndServe()
 }
 
-// TODO dispatchRouter recover notFoundRouter
 func NewEasyServer() *EasyServer {
 	host := configure.DefaultString("http.host", "")
 	port := configure.DefaultString("http.port", "")

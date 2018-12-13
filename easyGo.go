@@ -72,6 +72,15 @@ func InitHTTP(easyServer *server.EasyServer) {
 	server.InitHTTPServer(easyServer)
 }
 
+//// 初始化GRPC
+//func InitGRPC(grpcServer rpc.GRPCServerInterface) {
+//	rpcErr := rpc.InitGRPC(grpcServer)
+//	if rpcErr != nil {
+//		fmt.Printf("Initialize grpc error : %s", rpcErr)
+//		os.Exit(configure.KInitGRPCError)
+//	}
+//}
+
 // WaitSignal Wait signal
 func WaitSignal() {
 	sigChan := make(chan os.Signal)
