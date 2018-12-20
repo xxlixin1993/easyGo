@@ -2,11 +2,13 @@ package rpc
 
 import (
 	"net"
+	"context"
 
 	"google.golang.org/grpc"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/logging"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
 )
 
 type GRPCInterface interface {
@@ -41,9 +43,39 @@ func (s *Server) initServer(network, addr string) error {
 		return err
 	}
 
-	s.grpcServer = grpc.NewServer()
+	// 初始化grpc access log
+	initAccessLog()
+
+	s.grpcServer = grpc.NewServer(
+		grpc.StreamInterceptor(
+			grpc_middleware.ChainStreamServer(
+				// TODO trace
+				LogStreamServerInterceptor(),
+		)),
+		grpc.UnaryInterceptor(
+			grpc_middleware.ChainUnaryServer(
+				// TODO trace
+				LogUnaryServerInterceptor(),
+			),
+		))
 
 	return nil
+}
+
+// UnaryServerInterceptor 空的中间件
+func emptyUnaryServerInterceptor(ctx context.Context, req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler,
+) (resp interface{}, err error) {
+	return handler(ctx, req)
+}
+
+// UnaryServerInterceptor 空的中间件
+func emptyTraceStreamClientInterceptor(srv interface{}, stream grpc.ServerStream,
+	info *grpc.StreamServerInfo,
+	handler grpc.StreamHandler,
+) (err error) {
+	return handler(srv, stream)
 }
 
 // 获取GRPC server
@@ -76,8 +108,8 @@ func (s *Server) Stop() error {
 
 // 初始化GRPC并启动
 func InitGRPC(grpcServer GRPCServerInterface) error {
-	network := configure.DefaultString("network", "tcp")
-	addr := configure.DefaultString("address", "0.0.0.0:50051")
+	network := configure.DefaultString("grpc.server.network", "tcp")
+	addr := configure.DefaultString("grpc.server.address", "0.0.0.0:50051")
 
 	initErr := grpcServer.initServer(network, addr)
 	if initErr != nil {
