@@ -12,22 +12,21 @@ func main() {
 	easyGo.InitFrame()
 	easyGo.InitMysql()
 	easyGo.InitRedis()
-	easyGo.InitHTTP(nil)
+
 	InitGRPC()
+
 	easyGo.WaitSignal()
 }
 
 type server struct {}
 
-// SayHello implements helloworld.GreeterServer
+
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 
 func InitGRPC(){
-	rpcServer := &rpc.Server{}
-	// grpclog.SetLoggerV2()
-	// TODO grpc日志
+	rpcServer := rpc.NewServer()
 	rpc.InitGRPC(rpcServer)
 	pb.RegisterGreeterServer(rpcServer.GetServer(), &server{})
 	go rpcServer.ListenAndServe()

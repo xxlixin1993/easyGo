@@ -36,7 +36,7 @@ func initAccessLog(cSMode string) error {
 		return errors.New("[grpc_logger] empty path")
 	}
 
-	enabled = configure.DefaultBool("grpc."+cSMode+".accesslog.enabled", false)
+	enabled = configure.DefaultBool("grpc."+cSMode+".accesslog.enabled", true)
 
 	cfg := zap.NewProductionConfig()
 

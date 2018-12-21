@@ -2,25 +2,26 @@ package main
 
 import (
 	"log"
-	"golang.org/x/net/context"
-	"github.com/xxlixin1993/easyGo/examples/grpc/pb"
+	"context"
+
 	"github.com/xxlixin1993/easyGo"
 	"github.com/xxlixin1993/easyGo/rpc"
+	"github.com/xxlixin1993/easyGo/examples/grpc/pb"
 )
 
 func main() {
 	easyGo.InitFrame()
 	easyGo.InitMysql()
 	easyGo.InitRedis()
-	// TODO exit
-	easyGo.InitHTTP(nil)
 
+	easyGo.InitGRPCClient()
+	// TODO debug log
 	testClient()
+
 	easyGo.WaitSignal()
 }
 
 func testClient() {
-	rpc.InitGRPCClient()
 	conn := rpc.GetGRPCClientConn("first")
 	if conn == nil {
 		log.Fatal("conn is nil")

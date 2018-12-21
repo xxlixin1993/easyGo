@@ -2,13 +2,12 @@ package rpc
 
 import (
 	"net"
-	"context"
-
 	"google.golang.org/grpc"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/logging"
-	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"context"
 )
 
 type GRPCInterface interface {
@@ -33,6 +32,11 @@ type GRPCServerInterface interface {
 type Server struct {
 	listener   net.Listener
 	grpcServer *grpc.Server
+}
+
+// 创建Server
+func NewServer() *Server {
+	return &Server{}
 }
 
 // 初始化grpc server

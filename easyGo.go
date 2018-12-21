@@ -14,6 +14,7 @@ import (
 	"github.com/xxlixin1993/easyGo/orm/mysql"
 	"github.com/xxlixin1993/easyGo/cache"
 	"github.com/xxlixin1993/easyGo/server"
+	"github.com/xxlixin1993/easyGo/rpc"
 )
 
 const (
@@ -72,14 +73,11 @@ func InitHTTP(easyServer *server.EasyServer) {
 	server.InitHTTPServer(easyServer)
 }
 
-//// 初始化GRPC
-//func InitGRPC(grpcServer rpc.GRPCServerInterface) {
-//	rpcErr := rpc.InitGRPC(grpcServer)
-//	if rpcErr != nil {
-//		fmt.Printf("Initialize grpc error : %s", rpcErr)
-//		os.Exit(configure.KInitGRPCError)
-//	}
-//}
+
+// 初始化GRPC client
+func InitGRPCClient() {
+	rpc.InitGRPCClient()
+}
 
 // WaitSignal Wait signal
 func WaitSignal() {
