@@ -7,8 +7,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"google.golang.org/grpc"
 	"go.uber.org/zap"
-	"context"
-	"log"
+	"go.uber.org/zap/zapcore"
 )
 
 var (
@@ -71,20 +70,12 @@ func initLog(path string) (*zap.Logger, error) {
 	cfg.EncoderConfig.NameKey = ""
 	cfg.EncoderConfig.CallerKey = ""
 
-	return cfg.Build()
-}
+	// info级别不输出code ok, 所以默认是debug
+	cfg.Level.SetLevel(
+		zapcore.Level(configure.DefaultInt("grpc.client.accesslog.level", int(zapcore.DebugLevel))),
+	)
 
-func UnaryClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	log.Printf("before invoker. method: %+v, request:%+v", method, req)
-	err := invoker(ctx, method, req, reply, cc, opts...)
-	log.Printf("after invoker. reply: %+v", reply)
-	return err
-}
-func StreamClientInterceptor(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	log.Printf("before invoker. method: %+v, StreamDesc:%+v", method, desc)
-	clientStream, err := streamer(ctx, desc, cc, method, opts...)
-	log.Printf("before invoker. method: %+v", method)
-	return clientStream, err
+	return cfg.Build()
 }
 
 // StreamClientInterceptor Grpc客户端Stream Log中间件

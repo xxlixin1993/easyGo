@@ -15,7 +15,6 @@ func main() {
 	easyGo.InitRedis()
 
 	easyGo.InitGRPCClient()
-	// TODO debug log
 	testClient()
 
 	easyGo.WaitSignal()

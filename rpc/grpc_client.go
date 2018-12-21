@@ -6,6 +6,7 @@ import (
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
+	"github.com/xxlixin1993/easyGo/gracefulExit"
 )
 
 type GRPCClient struct {
@@ -74,18 +75,15 @@ func InitGRPCClient() error {
 			grpc.WithInsecure(),
 			grpc.WithUnaryInterceptor(LogUnaryClientInterceptor()),
 			grpc.WithStreamInterceptor(LogSteamClientInterceptor()),
-			//grpc.WithStreamInterceptor(StreamClientInterceptor),
-			//grpc.WithUnaryInterceptor(UnaryClientInterceptor),
 		)
 		if err != nil {
 			return err
 		}
 
 		grpcClient.clientMap[clientName] = conn
-
 	}
 
-	return nil
+	return gracefulExit.GetExitList().UnShift(grpcClient)
 }
 
 // UnaryClientInterceptor 空的客户端Unary 中间件

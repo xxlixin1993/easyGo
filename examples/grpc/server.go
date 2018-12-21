@@ -14,7 +14,7 @@ func main() {
 	easyGo.InitRedis()
 
 	InitGRPC()
-
+	easyGo.InitGRPCClient()
 	easyGo.WaitSignal()
 }
 

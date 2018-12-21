@@ -63,7 +63,7 @@ func (s *Server) initServer(network, addr string) error {
 			),
 		))
 
-	return nil
+	return gracefulExit.GetExitList().UnShift(s)
 }
 
 // 获取GRPC server
