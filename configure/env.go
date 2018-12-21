@@ -11,7 +11,6 @@ const (
 	KInitMySQLError
 	KInitRedisError
 	KInitHTTPError
-	KInitGRPCError
 )
 
 const (
@@ -29,6 +28,9 @@ const (
 
 	// GRPC 模块名
 	KGRPCModuleName = "grpcModule"
+
+	// GRPC client 模块名
+	KGRPCClientModule = "grpcClientModule"
 )
 
 // 读写两种模式

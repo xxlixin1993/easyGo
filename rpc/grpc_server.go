@@ -44,7 +44,7 @@ func (s *Server) initServer(network, addr string) error {
 	}
 
 	// 初始化grpc access log
-	initAccessLog()
+	initAccessLog(kServerLog)
 
 	s.grpcServer = grpc.NewServer(
 		grpc.StreamInterceptor(
@@ -60,22 +60,6 @@ func (s *Server) initServer(network, addr string) error {
 		))
 
 	return nil
-}
-
-// UnaryServerInterceptor 空的中间件
-func emptyUnaryServerInterceptor(ctx context.Context, req interface{},
-	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler,
-) (resp interface{}, err error) {
-	return handler(ctx, req)
-}
-
-// UnaryServerInterceptor 空的中间件
-func emptyTraceStreamClientInterceptor(srv interface{}, stream grpc.ServerStream,
-	info *grpc.StreamServerInfo,
-	handler grpc.StreamHandler,
-) (err error) {
-	return handler(srv, stream)
 }
 
 // 获取GRPC server
@@ -104,6 +88,22 @@ func (s *Server) GetModuleName() string {
 func (s *Server) Stop() error {
 	s.grpcServer.GracefulStop()
 	return nil
+}
+
+// UnaryServerInterceptor 空的服务端Unary 中间件
+func emptyUnaryServerInterceptor(ctx context.Context, req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler,
+) (resp interface{}, err error) {
+	return handler(ctx, req)
+}
+
+// StreamServerInterceptor 空的服务端Stream 中间件
+func emptyStreamServerInterceptor(srv interface{}, stream grpc.ServerStream,
+	info *grpc.StreamServerInfo,
+	handler grpc.StreamHandler,
+) (err error) {
+	return handler(srv, stream)
 }
 
 // 初始化GRPC并启动

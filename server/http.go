@@ -107,7 +107,7 @@ func (easyServer *EasyServer) getGinEngine() *gin.Engine {
 }
 
 // 监听
-func (easyServer *EasyServer) listenAndServe(){
+func (easyServer *EasyServer) listenAndServe() {
 	if err := easyServer.httpServer.ListenAndServe(); err != nil {
 		logging.ErrorF("[http] listenAndServe server err:(%s)", err)
 	}

@@ -2,35 +2,35 @@ package main
 
 import (
 	"log"
-	"os"
-
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 	"github.com/xxlixin1993/easyGo/examples/grpc/pb"
-)
-
-const (
-	address     = "127.0.0.1:50051"
-	defaultName = "world"
+	"github.com/xxlixin1993/easyGo"
+	"github.com/xxlixin1993/easyGo/rpc"
 )
 
 func main() {
-	// Set up a connection to the server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+	easyGo.InitFrame()
+	easyGo.InitMysql()
+	easyGo.InitRedis()
+	// TODO exit
+	easyGo.InitHTTP(nil)
+
+	testClient()
+	easyGo.WaitSignal()
+}
+
+func testClient() {
+	rpc.InitGRPCClient()
+	conn := rpc.GetGRPCClientConn("first")
+	if conn == nil {
+		log.Fatal("conn is nil")
 	}
-	defer conn.Close()
 	c := pb.NewGreeterClient(conn)
 
-	// Contact the server and print out its response.
-	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
-	}
-	r, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: name})
+	r, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: "world test"})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
 	log.Printf("Greeting: %s", r.Message)
+
 }

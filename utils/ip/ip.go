@@ -1,14 +1,10 @@
 package ip
 
 import (
-	"errors"
 	"net"
 	"net/http"
 	"strings"
 )
-
-// ErrIPLimited ip受限
-var ErrIPLimited = errors.New("IP has been limited")
 
 // IsInternalIP 检查是否是内网Ip
 func IsInternalIP(ipString string) bool {
