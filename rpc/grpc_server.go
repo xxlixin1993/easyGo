@@ -47,8 +47,8 @@ func (s *Server) initServer(network, addr string) error {
 		return err
 	}
 
-	// 初始化grpc access log
-	initAccessLog(kServerLog)
+	// 初始化grpc server access log
+	initServerAccessLog()
 
 	s.grpcServer = grpc.NewServer(
 		grpc.StreamInterceptor(

@@ -57,8 +57,8 @@ func InitGRPCClient() error {
 		return errors.New("[grpc_client] empty client config")
 	}
 
-	// 初始化grpc access log
-	initAccessLog(kClientLog)
+	// 初始化grpc client access log
+	initClientAccessLog()
 
 	// 创建GRPCClient
 	grpcClient = newGRPCClient()
@@ -72,8 +72,10 @@ func InitGRPCClient() error {
 		// TODO load balance
 		conn, err := grpc.Dial(clientAddress,
 			grpc.WithInsecure(),
-			grpc.WithStreamInterceptor(LogSteamClientInterceptor()),
 			grpc.WithUnaryInterceptor(LogUnaryClientInterceptor()),
+			grpc.WithStreamInterceptor(LogSteamClientInterceptor()),
+			//grpc.WithStreamInterceptor(StreamClientInterceptor),
+			//grpc.WithUnaryInterceptor(UnaryClientInterceptor),
 		)
 		if err != nil {
 			return err
