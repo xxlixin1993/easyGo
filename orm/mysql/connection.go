@@ -62,8 +62,7 @@ func InitDB() error {
 	}
 
 	// 平滑退出
-	gracefulExit.GetExitList().UnShift(allDB)
-	return nil
+	return gracefulExit.GetExitList().UnShift(allDB)
 }
 
 // Implement ExitInterface

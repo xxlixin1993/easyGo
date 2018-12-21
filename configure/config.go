@@ -32,7 +32,7 @@ type Config struct {
 // 初始化配置
 func InitConfig(filePath string, mod string) error {
 	if !utils.FileExists(filePath) {
-		return errors.New("no such file or dir")
+		return errors.New("[config] no such file or dir")
 	}
 
 	appConfig = &Config{}

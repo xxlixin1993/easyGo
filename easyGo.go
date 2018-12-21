@@ -14,6 +14,7 @@ import (
 	"github.com/xxlixin1993/easyGo/orm/mysql"
 	"github.com/xxlixin1993/easyGo/cache"
 	"github.com/xxlixin1993/easyGo/server"
+	"github.com/xxlixin1993/easyGo/rpc"
 )
 
 const (
@@ -70,6 +71,12 @@ func InitRedis() {
 // 初始化http
 func InitHTTP(easyServer *server.EasyServer) {
 	server.InitHTTPServer(easyServer)
+}
+
+
+// 初始化GRPC client
+func InitGRPCClient() {
+	rpc.InitGRPCClient()
 }
 
 // WaitSignal Wait signal

@@ -51,7 +51,6 @@ func InitHTTPServer(easyServer *EasyServer) {
 	go easyServer.listenAndServe()
 }
 
-// TODO dispatchRouter recover notFoundRouter
 func NewEasyServer() *EasyServer {
 	host := configure.DefaultString("http.host", "")
 	port := configure.DefaultString("http.port", "")
@@ -108,7 +107,7 @@ func (easyServer *EasyServer) getGinEngine() *gin.Engine {
 }
 
 // 监听
-func (easyServer *EasyServer) listenAndServe(){
+func (easyServer *EasyServer) listenAndServe() {
 	if err := easyServer.httpServer.ListenAndServe(); err != nil {
 		logging.ErrorF("[http] listenAndServe server err:(%s)", err)
 	}

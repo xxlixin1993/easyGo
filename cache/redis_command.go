@@ -30,7 +30,7 @@ func GetClient(redisName string, modeType uint8) (*Client, error) {
 	}
 
 	if rc == nil {
-		return nil, errors.New("the name given is not in the client pool")
+		return nil, errors.New("[redis] the name given is not in the client pool")
 	}
 	return &Client{
 		rc:       rc,
