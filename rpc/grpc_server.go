@@ -2,12 +2,13 @@ package rpc
 
 import (
 	"net"
-	"google.golang.org/grpc"
-	"github.com/xxlixin1993/easyGo/gracefulExit"
-	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"context"
+
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/logging"
-	"context"
+	"github.com/xxlixin1993/easyGo/gracefulExit"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"google.golang.org/grpc"
 )
 
 type GRPCInterface interface {

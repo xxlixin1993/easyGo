@@ -2,11 +2,11 @@ package rpc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/xxlixin1993/easyGo/configure"
-	"github.com/pkg/errors"
-	"google.golang.org/grpc"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
+	"google.golang.org/grpc"
 )
 
 type GRPCClient struct {
