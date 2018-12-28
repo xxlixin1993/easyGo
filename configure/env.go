@@ -11,6 +11,7 @@ const (
 	KInitMySQLError
 	KInitRedisError
 	KInitHTTPError
+	KInitGRPCCleintError
 )
 
 const (

@@ -76,7 +76,11 @@ func InitHTTP(easyServer *server.EasyServer) {
 
 // 初始化GRPC client
 func InitGRPCClient() {
-	rpc.InitGRPCClient()
+	grpcClientErr := rpc.InitGRPCClient()
+	if grpcClientErr != nil {
+		fmt.Printf("Initialize grpc client error : %s", grpcClientErr)
+		os.Exit(configure.KInitGRPCCleintError)
+	}
 }
 
 // WaitSignal Wait signal
