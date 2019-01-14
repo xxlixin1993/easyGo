@@ -12,6 +12,7 @@ const (
 	KInitRedisError
 	KInitHTTPError
 	KInitGRPCCleintError
+	KInitRabbitMqError
 )
 
 const (
@@ -32,6 +33,9 @@ const (
 
 	// GRPC client 模块名
 	KGRPCClientModule = "grpcClientModule"
+
+	//rabbitMQ 模块名
+	KInitRabbitMqModule = "rabbitMqModule"
 )
 
 // 读写两种模式

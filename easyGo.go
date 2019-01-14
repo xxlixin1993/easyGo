@@ -89,8 +89,8 @@ func InitMq() {
 	mqErr := messageQueue.InitMq()
 
 	if mqErr != nil {
-		fmt.Printf("Initialize mysql error : %s", mysqlErr)
-		os.Exit(configure.KInitMySQLError)
+		fmt.Printf("Initialize message queue error : %s", mqErr)
+		os.Exit(configure.KInitRabbitMqError)
 	}
 }
 
