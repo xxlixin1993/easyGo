@@ -22,10 +22,10 @@ type EasyServer struct {
 	readTimeout    time.Duration
 	writeTimeout   time.Duration
 	httpServer     *http.Server
-	dispatchRouter func(engine *gin.Engine)
-	recover        func() gin.HandlerFunc
-	notFoundRouter func(c *gin.Context)
-	logger         func() gin.HandlerFunc
+	DispatchRouter func(engine *gin.Engine)
+	Recover        func() gin.HandlerFunc
+	NotFoundRouter func(c *gin.Context)
+	Logger         func() gin.HandlerFunc
 }
 
 // GetModuleName Implement ExitInterface
@@ -82,26 +82,26 @@ func (easyServer *EasyServer) getGinEngine() *gin.Engine {
 	}
 	engine := gin.New()
 
-	if easyServer.recover == nil {
-		easyServer.recover = easyServer.defaultRecover
+	if easyServer.Recover == nil {
+		easyServer.Recover = easyServer.defaultRecover
 	}
 
-	if easyServer.notFoundRouter == nil {
-		easyServer.notFoundRouter = func(c *gin.Context) {
+	if easyServer.NotFoundRouter == nil {
+		easyServer.NotFoundRouter = func(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{})
 		}
 	}
 
-	if easyServer.logger == nil {
-		easyServer.logger = easyServer.defaultLogger
+	if easyServer.Logger == nil {
+		easyServer.Logger = easyServer.defaultLogger
 	}
 
-	if easyServer.dispatchRouter == nil {
-		easyServer.dispatchRouter = easyServer.defaultDispatchRouter
+	if easyServer.DispatchRouter == nil {
+		easyServer.DispatchRouter = easyServer.defaultDispatchRouter
 	}
 
-	engine.Use(easyServer.logger(), easyServer.recover())
-	easyServer.dispatchRouter(engine)
+	engine.Use(easyServer.Logger(), easyServer.Recover())
+	easyServer.DispatchRouter(engine)
 
 	return engine
 }
