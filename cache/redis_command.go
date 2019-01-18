@@ -111,6 +111,7 @@ func (c *Client) SRandMember(key string, count interface{}) ([]int64, error) {
 	return redigo.Int64s(member, err)
 }
 
+// HMSet redis-hmset command
 func (c *Client) HMSet(data ...interface{}) error {
 	conn := c.rc.Get()
 	defer conn.Close()
@@ -118,6 +119,7 @@ func (c *Client) HMSet(data ...interface{}) error {
 	return err
 }
 
+// HSet redis-hset command
 func (c *Client) HSet(key string, field string, value interface{}) error {
 	conn := c.rc.Get()
 	defer conn.Close()
@@ -125,6 +127,7 @@ func (c *Client) HSet(key string, field string, value interface{}) error {
 	return err
 }
 
+// HGet redis-hget command
 func (c *Client) HGet(key string, field string) (string, error) {
 	conn := c.rc.Get()
 	defer conn.Close()
@@ -132,6 +135,23 @@ func (c *Client) HGet(key string, field string) (string, error) {
 	return redigo.String(reply, err)
 }
 
+// HGetAll redis-hgetall command
+func (c *Client) HGetAll(key string) (map[string]int, error) {
+	conn := c.rc.Get()
+	defer conn.Close()
+	reply, err := conn.Do("HGETALL", key)
+	return redigo.IntMap(reply, err)
+}
+
+// HDel redis-hdel command
+func (c *Client) HDel(key string, field string) error {
+	conn := c.rc.Get()
+	defer conn.Close()
+	_, err := conn.Do("HDEL", key, field)
+	return err
+}
+
+// Expire redis-expire command
 func (c *Client) Expire(key string, value interface{}) error {
 	conn := c.rc.Get()
 	defer conn.Close()
@@ -261,12 +281,4 @@ func (c *Client) GEORadius(keyData ...interface{}) ([]int64, error) {
 	defer conn.Close()
 	reply, err := conn.Do("GEORADIUS", keyData...)
 	return redigo.Int64s(reply, err)
-}
-
-// HGetAll redis-hgetall command
-func (c *Client) HGetAll(key string) (map[string]int, error) {
-	conn := c.rc.Get()
-	defer conn.Close()
-	reply, err := conn.Do("HGETALL", key)
-	return redigo.IntMap(reply, err)
 }
