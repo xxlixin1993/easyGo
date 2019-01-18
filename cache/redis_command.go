@@ -172,6 +172,14 @@ func (c *Client) SAdd(data ...interface{}) error {
 	return err
 }
 
+// SRem redis-srem command
+func (c *Client) SRem(data ...interface{}) error {
+	conn := c.rc.Get()
+	defer conn.Close()
+	_, err := conn.Do("SREM", data...)
+	return err
+}
+
 // ZAddBatch redis-zadd command
 // key must be the first param
 // every score is always in front of its member
