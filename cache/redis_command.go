@@ -156,6 +156,15 @@ func (c *Client) ZAdd(key string, score, member interface{}) error {
 	return err
 }
 
+// SMembers redis-smembers command
+func (c *Client) SMembers(key string) error {
+	conn := c.rc.Get()
+	defer conn.Close()
+	_, err := conn.Do("SMEMBERS", key)
+	return err
+}
+
+// SAdd redis-sadd command
 func (c *Client) SAdd(data ...interface{}) error {
 	conn := c.rc.Get()
 	defer conn.Close()
