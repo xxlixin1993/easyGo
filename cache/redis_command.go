@@ -151,6 +151,14 @@ func (c *Client) HDel(key string, field string) error {
 	return err
 }
 
+// HExists redis-hexists command
+func (c *Client) HExists(key string, field string) error {
+	conn := c.rc.Get()
+	defer conn.Close()
+	_, err := conn.Do("HEXISTS", key, field)
+	return err
+}
+
 // Expire redis-expire command
 func (c *Client) Expire(key string, value interface{}) error {
 	conn := c.rc.Get()
