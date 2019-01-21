@@ -185,11 +185,11 @@ func (c *Client) ZAdd(key string, score, member interface{}) error {
 }
 
 // SMembers redis-smembers command
-func (c *Client) SMembers(key string) error {
+func (c *Client) SMembers(key string) ([]int, error) {
 	conn := c.rc.Get()
 	defer conn.Close()
-	_, err := conn.Do("SMEMBERS", key)
-	return err
+	reply, err := conn.Do("SMEMBERS", key)
+	return redigo.Ints(reply, err)
 }
 
 // SAdd redis-sadd command
@@ -206,6 +206,14 @@ func (c *Client) SRem(data ...interface{}) error {
 	defer conn.Close()
 	_, err := conn.Do("SREM", data...)
 	return err
+}
+
+// SCard redis-scard command
+func (c *Client) SCard(key string) (int, error) {
+	conn := c.rc.Get()
+	defer conn.Close()
+	reply, err := conn.Do("SCARD", key)
+	return redigo.Int(reply, err)
 }
 
 // ZAddBatch redis-zadd command
