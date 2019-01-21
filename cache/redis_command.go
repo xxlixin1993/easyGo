@@ -152,11 +152,11 @@ func (c *Client) HDel(key string, field string) error {
 }
 
 // HExists redis-hexists command
-func (c *Client) HExists(key string, field string) error {
+func (c *Client) HExists(key string, field string) (bool, error) {
 	conn := c.rc.Get()
 	defer conn.Close()
-	_, err := conn.Do("HEXISTS", key, field)
-	return err
+	reply, err := conn.Do("HEXISTS", key, field)
+	return redigo.Bool(reply, err)
 }
 
 // Expire redis-expire command
