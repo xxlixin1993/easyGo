@@ -12,7 +12,7 @@ import (
     bindingKey   = configure.DefaultString("rabbitMq.bindingKey", "test-key")
 )*/
 
-type ConsumerParam struct {
+type consumerParam struct {
     exchange     string //交换器名称
     exchangeType string //交换器分发消息类型
     queueName    string //队列名称
@@ -20,6 +20,20 @@ type ConsumerParam struct {
     consumerTag  string //消费者的标识
 }
 
+//创建消费者所需参数
+func NewConsumerParam(exchange, exchangeType, queueName, bindingKey, consumerTag string) *consumerParam {
+
+    return  &consumerParam{
+                    exchange:exchange,
+                    exchangeType:exchangeType,
+                    queueName:queueName,
+                    bindingKey:bindingKey,
+                    consumerTag:consumerTag,
+             }
+}
+
+
+//创建消费者
 func NewConsumer(consumerTag string) (*consumer, error) {
     shareConn, err := GetConnection()
     if err != nil {
@@ -31,7 +45,8 @@ func NewConsumer(consumerTag string) (*consumer, error) {
     return consumer, nil
 }
 
-func (c *consumer) Consume(paramInfo ConsumerParam) (<-chan amqp.Delivery, error) {
+//消息消费(对创建交换器，队列，交换器队列绑定，消息消费的封装)
+func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, error) {
     var err error
     c.channel, err = c.conn.Channel()
 

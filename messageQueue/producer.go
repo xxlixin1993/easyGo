@@ -6,10 +6,7 @@ import (
 )
 
 
-type producer struct {
-    conn       *shareConn
-    channel    *safeChannel
-}
+
 
 type producerParam struct {
     exchange string
@@ -19,7 +16,25 @@ type producerParam struct {
     publishing amqp.Publishing
 }
 
+//创建发布者所需参数
+func NewProducerParam(exchange, exchangeType, routingKey string, reliable bool, publishing amqp.Publishing) *producerParam {
 
+    return  &producerParam{
+        exchange:exchange,
+        exchangeType:exchangeType,
+        routingKey:routingKey,
+        reliable:reliable,
+        publishing:publishing,
+    }
+}
+
+
+type producer struct {
+    conn       *shareConn
+    channel    *safeChannel
+}
+
+// 创建生产者
 func NewProducer() (*producer, error) {
     conn, err := GetConnection()
     if err != nil {
@@ -29,6 +44,7 @@ func NewProducer() (*producer, error) {
     return  &producer{conn: conn}, nil
 }
 
+// 消息发布(对创建交换器，队列，交换器队列绑定, 发布消息的封装)
 func (p *producer)Publish(paramInfo producerParam) error {
     var err error
     p.channel, err = p.conn.Channel()
