@@ -21,7 +21,8 @@ type rabbitMqPool struct {
 }
 
 //初始化rabbitMq连接池
-func InitMq(size int) error {
+func InitMq() error {
+    size := configure.DefaultInt("rabbitMqPool.size", 5)
     rabbitPool = &rabbitMqPool{size: size}
 
     return rabbitPool.initialize()
