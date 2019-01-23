@@ -15,6 +15,7 @@ import (
 	"github.com/xxlixin1993/easyGo/cache"
 	"github.com/xxlixin1993/easyGo/server"
 	"github.com/xxlixin1993/easyGo/rpc"
+	"github.com/xxlixin1993/easyGo/messageQueue"
 )
 
 const (
@@ -80,6 +81,16 @@ func InitGRPCClient() {
 	if grpcClientErr != nil {
 		fmt.Printf("Initialize grpc client error : %s", grpcClientErr)
 		os.Exit(configure.KInitGRPCCleintError)
+	}
+}
+
+//初始化消息队列
+func InitMq() {
+	mqErr := messageQueue.InitMq()
+
+	if mqErr != nil {
+		fmt.Printf("Initialize message queue error : %s", mqErr)
+		os.Exit(configure.KInitRabbitMqError)
 	}
 }
 
