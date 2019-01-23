@@ -21,7 +21,7 @@ type rabbitMqPool struct {
 }
 
 //初始化rabbitMq连接池
-func Init(size int) error {
+func InitMq(size int) error {
     rabbitPool = &rabbitMqPool{size: size}
 
     return rabbitPool.initialize()
