@@ -22,7 +22,6 @@ const (
 	KLevelDebug
 )
 
-
 // 日志输出等级
 var LevelName = [7]string{"F", "E", "W", "N", "I", "T", "D"}
 

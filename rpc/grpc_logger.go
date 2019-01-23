@@ -3,11 +3,11 @@ package rpc
 import (
 	"errors"
 
-	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	"google.golang.org/grpc"
+	"github.com/xxlixin1993/easyGo/configure"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"google.golang.org/grpc"
 )
 
 var (

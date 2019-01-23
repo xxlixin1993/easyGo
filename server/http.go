@@ -1,19 +1,19 @@
 package server
 
 import (
-	"time"
-	"net/http"
-	"context"
 	"bytes"
-	"net/http/httputil"
+	"context"
 	"fmt"
-	"runtime/debug"
 	"net"
+	"net/http"
+	"net/http/httputil"
+	"runtime/debug"
+	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
 	"github.com/xxlixin1993/easyGo/logging"
-	"github.com/gin-gonic/gin"
 )
 
 type EasyServer struct {

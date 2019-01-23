@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/xxlixin1993/easyGo"
 	"github.com/xxlixin1993/easyGo/orm/mysql"
-	"fmt"
 )
 
 type TestModel struct {
@@ -26,7 +26,7 @@ func main() {
 	easyGo.WaitSignal()
 }
 
-func testSql(){
+func testSql() {
 	db, _ := mysql.GetMasterConn("mysql_first")
 	//db.Create(&TestModel{
 	//	UID:   2,
@@ -37,10 +37,9 @@ func testSql(){
 	//})
 
 	tm := &TestModel{}
-	for i:=0;i<10 ;i++  {
-		db.Where(&TestModel{UID:2}).Find(&tm)
+	for i := 0; i < 10; i++ {
+		db.Where(&TestModel{UID: 2}).Find(&tm)
 		fmt.Println(tm)
 	}
 
 }
-

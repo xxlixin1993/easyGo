@@ -1,13 +1,13 @@
 package rpc
 
 import (
-	"net"
 	"context"
+	"net"
 
-	"github.com/xxlixin1993/easyGo/configure"
-	"github.com/xxlixin1993/easyGo/logging"
-	"github.com/xxlixin1993/easyGo/gracefulExit"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/xxlixin1993/easyGo/configure"
+	"github.com/xxlixin1993/easyGo/gracefulExit"
+	"github.com/xxlixin1993/easyGo/logging"
 	"google.golang.org/grpc"
 )
 
@@ -56,7 +56,7 @@ func (s *Server) initServer(network, addr string) error {
 			grpc_middleware.ChainStreamServer(
 				// TODO trace
 				LogStreamServerInterceptor(),
-		)),
+			)),
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
 				// TODO trace

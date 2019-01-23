@@ -1,10 +1,10 @@
 package mysql
 
 import (
+	"errors"
 	"math/rand"
 	"strconv"
 	"time"
-	"errors"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -13,8 +13,6 @@ import (
 )
 
 var allDB *mysqlPool
-
-
 
 type (
 	mysqlPool struct {

@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/xxlixin1993/easyGo"
 	"github.com/xxlixin1993/easyGo/cache"
 	"github.com/xxlixin1993/easyGo/configure"
-	"fmt"
 	"github.com/xxlixin1993/easyGo/logging"
 )
 
@@ -16,8 +16,8 @@ func main() {
 	easyGo.WaitSignal()
 }
 
-func testRedis(){
-	readClient, err:= cache.GetClient("redis_first", configure.KReadMode)
+func testRedis() {
+	readClient, err := cache.GetClient("redis_first", configure.KReadMode)
 	if err != nil {
 		logging.Fatal(err)
 	}

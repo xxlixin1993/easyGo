@@ -3,8 +3,8 @@ package cache
 import (
 	"errors"
 
-	"github.com/xxlixin1993/easyGo/configure"
 	redigo "github.com/gomodule/redigo/redis"
+	"github.com/xxlixin1993/easyGo/configure"
 )
 
 // Client redis handler

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
 	"context"
+	"log"
 
 	"github.com/xxlixin1993/easyGo"
-	"github.com/xxlixin1993/easyGo/rpc"
 	"github.com/xxlixin1993/easyGo/examples/grpc/pb"
+	"github.com/xxlixin1993/easyGo/rpc"
 )
 
 func main() {

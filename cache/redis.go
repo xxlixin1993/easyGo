@@ -2,13 +2,13 @@ package cache
 
 import (
 	"errors"
-	"time"
-	"strconv"
 	"math/rand"
+	"strconv"
+	"time"
 
+	redigo "github.com/gomodule/redigo/redis"
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
-	redigo "github.com/gomodule/redigo/redis"
 )
 
 var pool *redisPool
@@ -186,7 +186,6 @@ func newConnPool(redisName string, mode string, indexStr string, modeType uint8)
 	if connErr != nil {
 		return nil, connErr
 	}
-
 
 	return &connPool{
 		maxIdleConns:    maxIdleConns,

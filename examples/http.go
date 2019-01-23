@@ -11,4 +11,3 @@ func main() {
 	easyGo.InitHTTP(nil)
 	easyGo.WaitSignal()
 }
-

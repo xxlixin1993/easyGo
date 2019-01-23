@@ -14,14 +14,13 @@ func main() {
 	easyGo.WaitSignal()
 }
 
-type server struct {}
-
+type server struct{}
 
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 
-func InitGRPC(){
+func InitGRPC() {
 	rpcServer := rpc.NewServer()
 	if err := rpc.InitGRPC(rpcServer); err != nil {
 		panic(err)
@@ -29,4 +28,3 @@ func InitGRPC(){
 	pb.RegisterGreeterServer(rpcServer.GetServer(), &server{})
 	go rpcServer.ListenAndServe()
 }
-

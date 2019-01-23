@@ -8,14 +8,14 @@ import (
 	"runtime"
 	"syscall"
 
+	"github.com/xxlixin1993/easyGo/cache"
 	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/gracefulExit"
 	"github.com/xxlixin1993/easyGo/logging"
-	"github.com/xxlixin1993/easyGo/orm/mysql"
-	"github.com/xxlixin1993/easyGo/cache"
-	"github.com/xxlixin1993/easyGo/server"
-	"github.com/xxlixin1993/easyGo/rpc"
 	"github.com/xxlixin1993/easyGo/messageQueue"
+	"github.com/xxlixin1993/easyGo/orm/mysql"
+	"github.com/xxlixin1993/easyGo/rpc"
+	"github.com/xxlixin1993/easyGo/server"
 )
 
 const (
@@ -73,7 +73,6 @@ func InitRedis() {
 func InitHTTP(easyServer *server.EasyServer) {
 	server.InitHTTPServer(easyServer)
 }
-
 
 // 初始化GRPC client
 func InitGRPCClient() {
