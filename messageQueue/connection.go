@@ -2,7 +2,9 @@ package messageQueue
 
 import (
 	"github.com/streadway/amqp"
+	"github.com/xxlixin1993/easyGo/configure"
 	"github.com/xxlixin1993/easyGo/logging"
+	"os"
 )
 
 type shareConn struct {
@@ -20,10 +22,8 @@ func newShareConn(id int8, conn *amqp.Connection) *shareConn {
 //获取连接
 func GetConnection() (*shareConn, error) {
 	if !rabbitPool.initialized {
-		err := rabbitPool.initialize()
-		if err != nil {
-			logging.FatalF("RabbitMq Connection Pool Initialize Failed! error: %v", err)
-		}
+		logging.Fatal("Get connection failed, need initialize rabbitMq connection pool first!",)
+		os.Exit(configure.KInitRabbitMqError)
 	}
 	conn, index := rabbitPool.getConnection()
 
