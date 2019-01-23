@@ -39,17 +39,7 @@ func (c *safeChannel) ExchangeDeclare(name, kind string, durable, autoDelete, in
 }
 
 func (c *safeChannel) Consume(queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args amqp.Table) (<-chan amqp.Delivery, error) {
-    deliveries, err := c.originChannel.Consume(queue, consumer, autoAck, exclusive, noLocal, noWait, args)
-    if err != nil {
-        //若发生错误，重试3次
-        err := c.reConnect()
-        if err != nil {
-            return nil, err
-            //logging.FatalF("ReCreate Channel  failed in `Consume step`, because: %v", err)
-        }
-        return c.originChannel.Consume(queue, consumer, autoAck, exclusive, noLocal, noWait, args)
-    }
-    return deliveries, nil
+    return  c.originChannel.Consume(queue, consumer, autoAck, exclusive, noLocal, noWait, args)
 }
 
 func (c *safeChannel) QueueDeclare(name string, durable, autoDelete, exclusive, noWait bool, args amqp.Table) (amqp.Queue, error) {
@@ -106,28 +96,13 @@ func (c *safeChannel) QueueDeclare(name string, durable, autoDelete, exclusive, 
      return err
 }
 func (c *safeChannel) Publish(exchange, key string, mandatory, immediate bool, msg amqp.Publishing) error {
-    err := c.originChannel.Publish(
+    return  c.originChannel.Publish(
         exchange,
         key,
         mandatory,
         immediate,
         msg,
     )
-    if err != nil {
-        //若发生错误，重试3次
-        err := c.reConnect()
-        if err != nil {
-            return err
-        }
-        err = c.originChannel.Publish(
-            exchange,
-            key,
-            mandatory,
-            immediate,
-            msg,
-        )
-    }
-    return err
 }
 
 func (c *safeChannel) Confirm(noWait bool) error  {
