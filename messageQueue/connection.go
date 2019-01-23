@@ -22,7 +22,7 @@ func newShareConn(id int8, conn *amqp.Connection) *shareConn {
 //获取连接
 func GetConnection() (*shareConn, error) {
 	if !rabbitPool.initialized {
-		logging.Fatal("Get connection failed, need initialize rabbitMq connection pool first!",)
+		logging.Fatal("Get Connection Failed, Need Initialize RabbitMq Connection Pool Firstly!",)
 		os.Exit(configure.KInitRabbitMqError)
 	}
 	conn, index := rabbitPool.getConnection()

@@ -5,12 +5,6 @@ import (
 	"github.com/xxlixin1993/easyGo/logging"
 )
 
-/*var (
-    exchange     = configure.DefaultString("rabbitMq.exchange", "test-exchange")
-    exchangeType = configure.DefaultString("rabbitMq.exchangeType", "direct")
-    queueName    = configure.DefaultString("rabbitMq.queue", "test-queue")
-    bindingKey   = configure.DefaultString("rabbitMq.bindingKey", "test-key")
-)*/
 
 type consumerParam struct {
 	exchange     string //交换器名称
@@ -35,7 +29,7 @@ func NewConsumerParam(exchange, exchangeType, queueName, bindingKey string) *con
 func NewConsumer(consumerTag string) (*consumer, error) {
 	shareConn, err := GetConnection()
 	if err != nil {
-		logging.Warning("获取连接失败!", err)
+		logging.Warning("Get Connection Failed!", err)
 		return nil, err
 	}
 
@@ -49,7 +43,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 	c.channel, err = c.conn.Channel()
 
 	if err != nil {
-		logging.Warning("声明信道失败!", err)
+		logging.Warning("Declare Channel Failed!", err)
 		return nil, err
 	}
 
@@ -62,7 +56,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		false, // 是否等待服务端的确认
 		nil,   //额外参数
 	); err != nil {
-		logging.Warning("声明交换器失败!", err)
+		logging.Warning("Declare Exchange Failed!", err)
 		return nil, err
 	}
 
@@ -75,7 +69,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		nil,
 	)
 	if err != nil {
-		logging.Warning("声明队列失败!", err)
+		logging.Warning("Declare Queue Failed!", err)
 		return nil, err
 	}
 
@@ -86,7 +80,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		false,                // 不会等待服务端的确认
 		nil,                  //额外参数
 	); err != nil {
-		logging.Warning("交换器队列绑定失败!", err)
+		logging.Warning("Exchange Queue Binding Failed!", err)
 		return nil, err
 	}
 

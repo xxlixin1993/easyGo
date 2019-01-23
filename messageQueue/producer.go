@@ -36,7 +36,7 @@ type producer struct {
 func NewProducer() (*producer, error) {
 	conn, err := GetConnection()
 	if err != nil {
-		logging.Warning("获取连接失败!", err)
+		logging.Warning("Get Connection Failed!", err)
 		return nil, err
 	}
 	return &producer{conn: conn}, nil
@@ -48,7 +48,7 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 	p.channel, err = p.conn.Channel()
 
 	if err != nil {
-		logging.Warning("声明信道失败!", err)
+		logging.Warning("Declare Channel Failed!", err)
 		return err
 	}
 
@@ -61,7 +61,7 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 		false,
 		nil,
 	); err != nil {
-		logging.Warning("声明交换器失败!", err)
+		logging.Warning("Declare Exchange Failed!", err)
 		return err
 	}
 	if _, err := p.channel.QueueDeclare(
@@ -72,14 +72,14 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 		false,
 		nil,
 	); err != nil {
-		logging.Warning("声明队列失败!", err)
+		logging.Warning("Declare Queue Failed!", err)
 		return err
 	}
 
 	if paramInfo.reliable {
 		logging.Info("开启发送确认.")
 		if err := p.channel.Confirm(false); err != nil {
-			logging.WarningF("Channel设置Confirm模式失败, 原因: %s", err)
+			logging.WarningF("The Channel Failed To Be Set Confirm Mode, Reason Is: %s", err)
 			return err
 		}
 
@@ -99,12 +99,12 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 }
 
 func confirmOne(confirms chan amqp.Confirmation) {
-	logging.Info("等待RabbitMq对Publish的确认")
+	logging.Info("Waiting RabbitMqServer Ack..")
 
 	if confirmed := <-confirms; confirmed.Ack {
-		logging.Info("消息 %d, 接受成功!", confirmed.DeliveryTag)
+		logging.Info("Message: %d, Accept Successfully!", confirmed.DeliveryTag)
 	} else {
-		logging.FatalF("消息%d, 接受失败!", confirmed.DeliveryTag)
+		logging.FatalF("MessageL: %d, Failed Accept !", confirmed.DeliveryTag)
 	}
 }
 

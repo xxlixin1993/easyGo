@@ -95,6 +95,34 @@ func (c *safeChannel) QueueBind(name, key, exchange string, noWait bool, args am
 	}
 	return err
 }
+
+func (c *safeChannel) QueueUnbind(name, key, exchange string, args amqp.Table) error {
+	err := c.originChannel.QueueUnbind(
+		name,
+		key,
+		exchange,
+		args,
+	)
+	if err != nil {
+		//若发生错误，重试3次
+		err := c.reConnect()
+		if err != nil {
+			return err
+		}
+		err = c.originChannel.QueueUnbind(
+			name,
+			key,
+			exchange,
+			args,
+		)
+	}
+	return err
+}
+
+func (c *safeChannel) QueueInspect(name string) (amqp.Queue, error) {
+	return  c.originChannel.QueueInspect(name)
+}
+
 func (c *safeChannel) Publish(exchange, key string, mandatory, immediate bool, msg amqp.Publishing) error {
 	return c.originChannel.Publish(
 		exchange,
@@ -123,6 +151,23 @@ func (c *safeChannel) NotifyConfirm(ack, nack chan uint64) (chan uint64, chan ui
 
 func (c *safeChannel) NotifyPublish(confirm chan amqp.Confirmation) chan amqp.Confirmation {
 	return c.originChannel.NotifyPublish(confirm)
+}
+
+func (c *safeChannel) Qos(prefetchCount, prefetchSize int, global bool) error {
+	err := c.originChannel.Qos(prefetchCount, prefetchSize, global)
+	if err != nil {
+		//若发生错误，重试3次
+		err := c.reConnect()
+		if err != nil {
+			return err
+		}
+		err = c.originChannel.Qos(prefetchCount, prefetchSize, global)
+	}
+	return err
+}
+
+func (c *safeChannel) Close() error {
+	return c.originChannel.Close()
 }
 
 func (c *safeChannel) reConnect() error {

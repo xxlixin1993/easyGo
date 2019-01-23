@@ -20,7 +20,7 @@ type rabbitMqPool struct {
 	rw          sync.RWMutex
 }
 
-//初始化rabbitMq连接池
+//实例化连接池对象
 func InitMq() error {
 	size := configure.DefaultInt("rabbitMqPool.size", 5)
 	rabbitPool = &rabbitMqPool{size: size}
@@ -28,6 +28,7 @@ func InitMq() error {
 	return rabbitPool.initialize()
 }
 
+//初始化rabbitMq连接池
 func (p *rabbitMqPool) initialize() error {
 	dsn := configure.DefaultString("rabbitMq.dsn", "amqp://guest:guest@localhost:5672")
 	for i := 0; i < rabbitPool.size; i++ {
