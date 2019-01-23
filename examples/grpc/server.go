@@ -23,7 +23,9 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 
 func InitGRPC(){
 	rpcServer := rpc.NewServer()
-	rpc.InitGRPC(rpcServer)
+	if err := rpc.InitGRPC(rpcServer); err != nil {
+		panic(err)
+	}
 	pb.RegisterGreeterServer(rpcServer.GetServer(), &server{})
 	go rpcServer.ListenAndServe()
 }

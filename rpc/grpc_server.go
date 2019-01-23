@@ -121,11 +121,5 @@ func InitGRPC(grpcServer GRPCServerInterface) error {
 		return initErr
 	}
 
-	// 平滑退出
-	exitErr := gracefulExit.GetExitList().UnShift(grpcServer)
-	if exitErr != nil {
-		return exitErr
-	}
-
 	return nil
 }
