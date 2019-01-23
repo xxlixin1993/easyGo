@@ -10,11 +10,7 @@ import (
 
 func main() {
 	easyGo.InitFrame()
-	easyGo.InitMysql()
-	easyGo.InitRedis()
-
 	InitGRPC()
-	easyGo.InitGRPCClient()
 	easyGo.WaitSignal()
 }
 

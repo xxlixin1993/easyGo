@@ -11,9 +11,6 @@ import (
 
 func main() {
 	easyGo.InitFrame()
-	easyGo.InitMysql()
-	easyGo.InitRedis()
-
 	easyGo.InitGRPCClient()
 	testClient()
 
