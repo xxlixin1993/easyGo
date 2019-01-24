@@ -5,7 +5,6 @@ import (
 	"github.com/xxlixin1993/easyGo/logging"
 )
 
-
 type consumerParam struct {
 	exchange     string //交换器名称
 	exchangeType string //交换器分发消息类型

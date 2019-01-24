@@ -105,9 +105,9 @@ func (p *producer) shutdown() error {
 
 	err := p.conn.conn.Close()
 	if err != nil {
-		logging.Fatal(string(ERR_CONNECTION_FAILED_CLOSE), err)
+		logging.Fatal(string(ErrConnectionFailedClose), err)
 		if err == amqp.ErrClosed {
-			return errors.New(string(ERR_CONNECTION_FAILED_CLOSE))
+			return errors.New(string(ErrConnectionFailedClose))
 		}
 	}
 	return nil
