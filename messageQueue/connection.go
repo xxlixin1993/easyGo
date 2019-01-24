@@ -1,20 +1,12 @@
 package messageQueue
 
 import (
+	"errors"
 	"github.com/streadway/amqp"
 	"github.com/xxlixin1993/easyGo/configure"
-	"github.com/xxlixin1993/easyGo/logging"
-	"os"
 )
 
-type ERRORSTRING string
 
-var ERR_NIL ERRORSTRING
-var ERR_CLOSED ERRORSTRING = "Channel/Connection Closed!"
-var ERR_FAILED_RECREATE ERRORSTRING = "Recreate Channel/Connection Failed!"
-var ERR_FAILED_CREATE ERRORSTRING = "Create Channel Failed"
-
-var ERR_NO_INIT_CONNECTION_POOL = "Need Initialize RabbitMq Connection Pool Firstly!"
 
 type shareConn struct {
 	position    int8 //连接在池中的索引, 便于连接失败时，及时清除
@@ -31,8 +23,7 @@ func newShareConn(id int8, conn *amqp.Connection) *shareConn {
 //获取连接
 func GetConnection() (*shareConn, error) {
 	if !rabbitPool.initialized {
-		logging.Fatal("Get Connection Failed, Need Initialize RabbitMq Connection Pool Firstly!")
-		os.Exit(configure.KInitRabbitMqError)
+		return  nil, errors.New(string(ERR_NO_INIT_CONNECTION_POOL))
 	}
 	conn, index := rabbitPool.getConnection()
 

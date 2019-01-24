@@ -1,39 +1,34 @@
 package messageQueue
 
 import (
+	"errors"
 	"github.com/streadway/amqp"
-	"github.com/xxlixin1993/easyGo/logging"
 )
 
-//安全Channel会对消费和创建队列和创建新交换器时发生错误时做处理，重连，更新连接池，记录日志等
+//安全Channel会做重连，更新连接池，记录日志等
 type safeChannel struct {
 	originChannel *amqp.Channel
 	position      int8
 }
 
-func (c *shareConn) Channel() (*safeChannel, ERRORSTRING) {
+func (c *shareConn) Channel() (*safeChannel, error) {
 	channel, err := c.conn.Channel()
-	if err != nil {
+	if err == amqp.ErrClosed {
+		//若为连接错误，重试3次
+		connection, err := c.ReConnect()
 		if err == amqp.ErrClosed {
-			//若为连接错误，重试3次
-			connection, err := c.ReConnect()
-			if err == amqp.ErrClosed {
-				logging.WarningF("ReConnect Failed, Because: %v", err)
-				return nil, ERR_FAILED_RECREATE
-			}
-			channel, err = connection.Channel()
-			if err == amqp.ErrClosed {
-				logging.WarningF("Recreate Channel Failed, Because: %v", err)
-				return nil, ERR_FAILED_RECREATE
-			}
-		} else {
-			logging.FatalF("Create Channel Failed, Because: %v", err)
-			return nil, ERR_FAILED_CREATE
+			return nil, errors.New(string(ERR_FAILED_RECREATE_CONNECTION))
 		}
-
+		channel, err = connection.Channel()
+		if err == amqp.ErrClosed {
+			return nil, errors.New(string(ERR_FAILED_RECREATE_CHANNEL))
+		}
 	}
 
-	return &safeChannel{originChannel: channel, position: c.position}, ERR_NIL
+	if err != nil {
+		return nil, errors.New(string(ERR_FAILED_CREATE))
+	}
+	return &safeChannel{originChannel: channel, position: c.position}, nil
 }
 
 func (c *safeChannel) ExchangeDeclare(name, kind string, durable, autoDelete, internal, noWait bool, args amqp.Table) error {

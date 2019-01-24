@@ -1,6 +1,7 @@
 package messageQueue
 
 import (
+	"errors"
 	"github.com/streadway/amqp"
 	"github.com/xxlixin1993/easyGo/logging"
 )
@@ -29,7 +30,6 @@ func NewConsumerParam(exchange, exchangeType, queueName, bindingKey string) *con
 func NewConsumer(consumerTag string) (*consumer, error) {
 	shareConn, err := GetConnection()
 	if err != nil {
-		logging.Warning("Get Connection Failed!", err)
 		return nil, err
 	}
 
@@ -41,9 +41,7 @@ func NewConsumer(consumerTag string) (*consumer, error) {
 func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, error) {
 	var err error
 	c.channel, err = c.conn.Channel()
-
 	if err != nil {
-		logging.Warning("Declare Channel Failed!", err)
 		return nil, err
 	}
 
@@ -56,8 +54,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		false, // 是否等待服务端的确认
 		nil,   //额外参数
 	); err != nil {
-		logging.Warning("Declare Exchange Failed!", err)
-		return nil, err
+		return nil, errors.New(string(ERR_DECLARE_Exchange_FAILED))
 	}
 
 	queue, err := c.channel.QueueDeclare(
@@ -69,8 +66,8 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		nil,
 	)
 	if err != nil {
-		logging.Warning("Declare Queue Failed!", err)
-		return nil, err
+
+		return nil, errors.New(string(ERR_DECLARE_QUEUE_FAILED))
 	}
 
 	if err = c.channel.QueueBind(
@@ -80,8 +77,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		false,                // 不会等待服务端的确认
 		nil,                  //额外参数
 	); err != nil {
-		logging.Warning("Exchange Queue Binding Failed!", err)
-		return nil, err
+		return nil, errors.New(string(ERR_EXCHANGE_QUEUE_FAILED_BINDING))
 	}
 
 	deliveries, err := c.channel.Consume(
@@ -94,8 +90,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		nil)        //额外参数
 
 	if err != nil {
-		logging.Warning("消费失败!", err)
-		return nil, err
+		return nil, errors.New(string(ERR_CONSUME_FAILED))
 	}
 	return deliveries, nil
 }
@@ -110,13 +105,12 @@ func (c *consumer) shutdown() error {
 
 	err := c.channel.originChannel.Cancel(c.tag, false)
 	if err != nil {
-		logging.FatalF("Channel 关闭失败!", err)
+		return errors.New(string(ERR_CHANNEL_FAILED_CLOSE))
 	}
 
 	err = c.conn.conn.Close()
 	if err != nil {
-		logging.FatalF("连接 关闭失败!", err)
-		return err
+		return errors.New(string(ERR_CONNECTION_FAILED_CLOSE))
 	}
 
 	logging.Info("消费者" + c.tag + "成功关闭!")

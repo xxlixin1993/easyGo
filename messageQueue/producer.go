@@ -36,7 +36,6 @@ type producer struct {
 func NewProducer() (*producer, error) {
 	conn, err := GetConnection()
 	if err != nil {
-		logging.Warning("Get Connection Failed!", err)
 		return nil, err
 	}
 	return &producer{conn: conn}, nil
@@ -48,7 +47,6 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 	p.channel, err = p.conn.Channel()
 
 	if err != nil {
-		logging.Warning("Declare Channel Failed!", err)
 		return err
 	}
 
@@ -61,14 +59,13 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 		false,
 		nil,
 	); err != nil {
-		logging.Warning("Declare Exchange Failed!", err)
 		return err
 	}
 
 	var confirms chan amqp.Confirmation
 
 	if paramInfo.reliable {
-		logging.Info("Start Confirm Mode!")
+		logging.Info("Starting Confirm Mode!")
 		if err := p.channel.Confirm(false); err != nil {
 			logging.WarningF("The Channel Failed To Be Set Confirm Mode, Reason Is: %s", err)
 			return err
@@ -108,9 +105,10 @@ func (p *producer) shutdown() error {
 
 	err := p.conn.conn.Close()
 	if err != nil {
-		logging.FatalF("连接 关闭失败!", err)
-		return err
+		logging.Fatal(string(ERR_CONNECTION_FAILED_CLOSE), err)
+		if err == amqp.ErrClosed {
+			return errors.New(string(ERR_CONNECTION_FAILED_CLOSE))
+		}
 	}
-	logging.Info("发布者连接成功关闭!")
 	return nil
 }
