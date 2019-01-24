@@ -10,19 +10,17 @@ import (
 type producerParam struct {
 	exchange     string
 	exchangeType string
-	queueName    string
 	routingKey   string
 	reliable     bool
 	publishing   amqp.Publishing
 }
 
 //创建发布者所需参数
-func NewProducerParam(exchange, exchangeType, queueName, routingKey string, reliable bool, publishing amqp.Publishing) *producerParam {
+func NewProducerParam(exchange, exchangeType, routingKey string, reliable bool, publishing amqp.Publishing) *producerParam {
 
 	return &producerParam{
 		exchange:     exchange,
 		exchangeType: exchangeType,
-		queueName:    queueName,
 		routingKey:   routingKey,
 		reliable:     reliable,
 		publishing:   publishing,
@@ -67,7 +65,7 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 		return err
 	}
 
-	var confirms  chan amqp.Confirmation
+	var confirms chan amqp.Confirmation
 
 	if paramInfo.reliable {
 		logging.Info("Start Confirm Mode!")

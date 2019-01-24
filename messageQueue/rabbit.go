@@ -8,7 +8,6 @@ import (
 //安全Channel会对消费和创建队列和创建新交换器时发生错误时做处理，重连，更新连接池，记录日志等
 type safeChannel struct {
 	originChannel *amqp.Channel
-	maxTry        int
 	position      int8
 }
 
@@ -34,7 +33,7 @@ func (c *shareConn) Channel() (*safeChannel, ERRORSTRING) {
 
 	}
 
-	return &safeChannel{originChannel: channel, maxTry: c.maxReConn, position: c.position}, nil
+	return &safeChannel{originChannel: channel, position: c.position}, ERR_NIL
 }
 
 func (c *safeChannel) ExchangeDeclare(name, kind string, durable, autoDelete, internal, noWait bool, args amqp.Table) error {

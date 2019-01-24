@@ -9,9 +9,12 @@ import (
 
 type ERRORSTRING string
 
+var ERR_NIL ERRORSTRING
 var ERR_CLOSED ERRORSTRING = "Channel/Connection Closed!"
 var ERR_FAILED_RECREATE ERRORSTRING = "Recreate Channel/Connection Failed!"
 var ERR_FAILED_CREATE ERRORSTRING = "Create Channel Failed"
+
+var ERR_NO_INIT_CONNECTION_POOL = "Need Initialize RabbitMq Connection Pool Firstly!"
 
 type shareConn struct {
 	position    int8 //连接在池中的索引, 便于连接失败时，及时清除
