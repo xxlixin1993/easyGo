@@ -17,16 +17,16 @@ func (c *shareConn) Channel() (*safeChannel, error) {
 		//若为连接错误，重试3次
 		connection, err := c.ReConnect()
 		if err == amqp.ErrClosed {
-			return nil, errors.New(string(ErrFailedRecreateConnection))
+			return nil, errors.New(ErrFailedRecreateConnection)
 		}
 		channel, err = connection.Channel()
 		if err == amqp.ErrClosed {
-			return nil, errors.New(string(ErrFailedRecreateChannel))
+			return nil, errors.New(ErrFailedRecreateChannel)
 		}
 	}
 
 	if err != nil {
-		return nil, errors.New(string(ErrFailedCreate))
+		return nil, errors.New(ErrFailedCreate)
 	}
 	return &safeChannel{originChannel: channel, position: c.position}, nil
 }

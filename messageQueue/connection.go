@@ -21,7 +21,7 @@ func newShareConn(id int8, conn *amqp.Connection) *shareConn {
 //获取连接
 func GetConnection() (*shareConn, error) {
 	if !rabbitPool.initialized {
-		return nil, errors.New(string(ErrNoInitConnectionPool))
+		return nil, errors.New(ErrNoInitConnectionPool)
 	}
 	conn, index := rabbitPool.getConnection()
 
