@@ -106,7 +106,7 @@ type consumer struct {
 	tag     string
 }
 
-func (c *consumer) Shutdown() error {
+func (c *consumer) shutdown() error {
 
 	err := c.channel.originChannel.Cancel(c.tag, false)
 	if err != nil {

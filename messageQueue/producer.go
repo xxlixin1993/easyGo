@@ -67,32 +67,30 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 		return err
 	}
 
+	var confirms  chan amqp.Confirmation
+
 	if paramInfo.reliable {
 		logging.Info("Start Confirm Mode!")
 		if err := p.channel.Confirm(false); err != nil {
 			logging.WarningF("The Channel Failed To Be Set Confirm Mode, Reason Is: %s", err)
 			return err
 		}
-
-		confirms := p.channel.NotifyPublish(make(chan amqp.Confirmation, 1))
-
-		if err = confirmOne(confirms); err != nil {
-			return err
-		}
-
+		confirms = p.channel.NotifyPublish(make(chan amqp.Confirmation, 1))
 	}
 
-	if err := p.channel.Publish(
+	err = p.channel.Publish(
 		paramInfo.exchange,   // 交换器名
 		paramInfo.routingKey, // 绑定键
 		false,                // mandatory, true:若没有一个队列与交换器绑定，则将消息返还给生产者 , false:若交换器没有匹配到队列，消息直接丢弃
 		false,                // immediate , true:队列没有对应的消费者，则将消息返还给生产者,
 		paramInfo.publishing,
-	); err != nil {
-		return err
+	)
+
+	if err != nil && paramInfo.reliable {
+		return confirmOne(confirms)
 	}
 
-	return nil
+	return err
 }
 
 func confirmOne(confirms chan amqp.Confirmation) error {
@@ -108,7 +106,7 @@ func confirmOne(confirms chan amqp.Confirmation) error {
 	}
 }
 
-func (p *producer) Shutdown() error {
+func (p *producer) shutdown() error {
 
 	err := p.conn.conn.Close()
 	if err != nil {
