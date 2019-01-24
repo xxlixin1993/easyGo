@@ -36,6 +36,7 @@ func testRabbitMq() {
 		logging.InfoF(
 			"got %q", delivery.Body,
 		)
+		delivery.Ack(false)
 	}
 
 }

@@ -6,8 +6,6 @@ import (
 	"github.com/xxlixin1993/easyGo/configure"
 )
 
-
-
 type shareConn struct {
 	position    int8 //连接在池中的索引, 便于连接失败时，及时清除
 	conn        *amqp.Connection
@@ -23,7 +21,7 @@ func newShareConn(id int8, conn *amqp.Connection) *shareConn {
 //获取连接
 func GetConnection() (*shareConn, error) {
 	if !rabbitPool.initialized {
-		return  nil, errors.New(string(ErrNoInitConnectionPool))
+		return nil, errors.New(string(ErrNoInitConnectionPool))
 	}
 	conn, index := rabbitPool.getConnection()
 

@@ -84,7 +84,6 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 	if err != nil && paramInfo.reliable {
 		return confirmOne(confirms)
 	}
-
 	return err
 }
 

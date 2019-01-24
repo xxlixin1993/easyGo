@@ -3,6 +3,7 @@ package messageQueue
 import (
 	"github.com/streadway/amqp"
 	"github.com/xxlixin1993/easyGo/configure"
+	"github.com/xxlixin1993/easyGo/gracefulExit"
 	"math/rand"
 	"sync"
 	"time"
@@ -25,7 +26,10 @@ func InitMq() error {
 	size := configure.DefaultInt("rabbitMqPool.size", 5)
 	rabbitPool = &rabbitMqPool{size: size}
 
-	return rabbitPool.initialize()
+	if err := rabbitPool.initialize(); err != nil {
+		return err
+	}
+	return gracefulExit.GetExitList().UnShift(rabbitPool)
 }
 
 //初始化rabbitMq连接池
@@ -62,4 +66,23 @@ func (p *rabbitMqPool) getConnection() (*amqp.Connection, int8) {
 	p.rw.RLock()
 	defer p.rw.RUnlock()
 	return p.container[index], int8(index)
+}
+
+// 退出时需要执行的函数
+func (p *rabbitMqPool) Stop() error {
+	p.rw.RLock()
+	defer p.rw.RUnlock()
+	for _, conn := range p.container {
+		if err := conn.Close(); err != nil {
+			return err
+		}
+	}
+	p.initialized = false
+	p.container = []*amqp.Connection{}
+	return nil
+}
+
+// 获取退出程序名
+func (p *rabbitMqPool) GetModuleName() string {
+	return configure.KRedisModuleName
 }
