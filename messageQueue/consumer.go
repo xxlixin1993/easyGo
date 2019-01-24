@@ -1,7 +1,6 @@
 package messageQueue
 
 import (
-	"errors"
 	"github.com/streadway/amqp"
 	"github.com/xxlixin1993/easyGo/logging"
 )
@@ -54,7 +53,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		false, // 是否等待服务端的确认
 		nil,   //额外参数
 	); err != nil {
-		return nil, errors.New(string(ERR_DECLARE_Exchange_FAILED))
+		return nil, err
 	}
 
 	queue, err := c.channel.QueueDeclare(
@@ -67,7 +66,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 	)
 	if err != nil {
 
-		return nil, errors.New(string(ERR_DECLARE_QUEUE_FAILED))
+		return nil, err
 	}
 
 	if err = c.channel.QueueBind(
@@ -77,7 +76,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		false,                // 不会等待服务端的确认
 		nil,                  //额外参数
 	); err != nil {
-		return nil, errors.New(string(ERR_EXCHANGE_QUEUE_FAILED_BINDING))
+		return nil, err
 	}
 
 	deliveries, err := c.channel.Consume(
@@ -90,7 +89,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		nil)        //额外参数
 
 	if err != nil {
-		return nil, errors.New(string(ERR_CONSUME_FAILED))
+		return nil, err
 	}
 	return deliveries, nil
 }
@@ -105,12 +104,12 @@ func (c *consumer) shutdown() error {
 
 	err := c.channel.originChannel.Cancel(c.tag, false)
 	if err != nil {
-		return errors.New(string(ERR_CHANNEL_FAILED_CLOSE))
+		return err
 	}
 
 	err = c.conn.conn.Close()
 	if err != nil {
-		return errors.New(string(ERR_CONNECTION_FAILED_CLOSE))
+		return err
 	}
 
 	logging.Info("消费者" + c.tag + "成功关闭!")

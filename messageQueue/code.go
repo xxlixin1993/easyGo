@@ -10,5 +10,6 @@ var ERR_NO_INIT_CONNECTION_POOL ERRORSTRING = "Need Initialize RabbitMq Connecti
 var ERR_CONNECTION_FAILED_CLOSE ERRORSTRING =  "Connection Close Failed!"
 var ERR_CHANNEL_FAILED_CLOSE ERRORSTRING =  "Channel Close Failed!"
 var ERR_DECLARE_QUEUE_FAILED ERRORSTRING = "Declare Queue Failed!";
+var ERR_DECLARE_EXCHANGE_FAILED ERRORSTRING = "Declare Exchange Failed!";
 var ERR_EXCHANGE_QUEUE_FAILED_BINDING ERRORSTRING = "Exchange Queue Binding Failed!"
 var ERR_CONSUME_FAILED ERRORSTRING = "Consume Failed!"
