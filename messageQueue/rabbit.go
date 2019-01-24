@@ -17,7 +17,7 @@ func (c *shareConn) Channel() (*safeChannel, ERRORSTRING) {
 	if err != nil {
 		if err == amqp.ErrClosed {
 			//若为连接错误，重试3次
-			connection, err := c.reConnect()
+			connection, err := c.ReConnect()
 			if err == amqp.ErrClosed {
 				logging.WarningF("ReConnect Failed, Because: %v", err)
 				return nil, ERR_FAILED_RECREATE
