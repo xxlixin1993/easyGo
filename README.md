@@ -15,6 +15,7 @@ A golang frame
 - grpc: google.golang.org/grpc
 - proto: github.com/golang/protobuf/proto
 - rabbitMq: github.com/streadway/amqp
+- http router: github.com/gin-gonic/gin
 
 # 如何使用
 ## 配置文件
