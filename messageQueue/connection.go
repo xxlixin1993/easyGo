@@ -7,6 +7,12 @@ import (
 	"os"
 )
 
+type ERRORSTRING string
+
+var ERR_CLOSED ERRORSTRING = "Channel/Connection Closed!"
+var ERR_FAILED_RECREATE ERRORSTRING = "Recreate Channel/Connection Failed!"
+var ERR_FAILED_CREATE ERRORSTRING = "Create Channel Failed"
+
 type shareConn struct {
 	position    int8 //连接在池中的索引, 便于连接失败时，及时清除
 	conn        *amqp.Connection
@@ -22,10 +28,26 @@ func newShareConn(id int8, conn *amqp.Connection) *shareConn {
 //获取连接
 func GetConnection() (*shareConn, error) {
 	if !rabbitPool.initialized {
-		logging.Fatal("Get Connection Failed, Need Initialize RabbitMq Connection Pool Firstly!",)
+		logging.Fatal("Get Connection Failed, Need Initialize RabbitMq Connection Pool Firstly!")
 		os.Exit(configure.KInitRabbitMqError)
 	}
 	conn, index := rabbitPool.getConnection()
 
 	return newShareConn(index, conn), nil
+}
+
+func (c *shareConn) ReConnect() (*amqp.Connection, error) {
+	var errBack error
+	dsn := configure.DefaultString("rabbitMq.dsn", "amqp://guest:guest@localhost:5672")
+	for i := 0; i < c.maxReConn; i++ {
+		connection, err := amqp.Dial(dsn)
+		if err != nil {
+			errBack = err
+			continue
+		}
+		rabbitPool.removeByPos(c.position)
+		c.position = rabbitPool.put(connection)
+		return connection, nil
+	}
+	return nil, errBack
 }
