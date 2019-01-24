@@ -1,6 +1,8 @@
 package messageQueue
 
 import (
+	"errors"
+	"fmt"
 	"github.com/streadway/amqp"
 	"github.com/xxlixin1993/easyGo/logging"
 )
@@ -64,20 +66,9 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 		logging.Warning("Declare Exchange Failed!", err)
 		return err
 	}
-	if _, err := p.channel.QueueDeclare(
-		paramInfo.queueName,
-		true,
-		false,
-		false,
-		false,
-		nil,
-	); err != nil {
-		logging.Warning("Declare Queue Failed!", err)
-		return err
-	}
 
 	if paramInfo.reliable {
-		logging.Info("开启发送确认.")
+		logging.Info("Start Confirm Mode!")
 		if err := p.channel.Confirm(false); err != nil {
 			logging.WarningF("The Channel Failed To Be Set Confirm Mode, Reason Is: %s", err)
 			return err
@@ -85,26 +76,35 @@ func (p *producer) Publish(paramInfo *producerParam) error {
 
 		confirms := p.channel.NotifyPublish(make(chan amqp.Confirmation, 1))
 
-		defer confirmOne(confirms)
+		if err = confirmOne(confirms); err != nil {
+			return err
+		}
+
 	}
 
-	p.channel.Publish(
+	if err := p.channel.Publish(
 		paramInfo.exchange,   // 交换器名
 		paramInfo.routingKey, // 绑定键
 		false,                // mandatory, true:若没有一个队列与交换器绑定，则将消息返还给生产者 , false:若交换器没有匹配到队列，消息直接丢弃
 		false,                // immediate , true:队列没有对应的消费者，则将消息返还给生产者,
 		paramInfo.publishing,
-	)
+	); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func confirmOne(confirms chan amqp.Confirmation) {
+func confirmOne(confirms chan amqp.Confirmation) error {
 	logging.Info("Waiting RabbitMqServer Ack..")
 
 	if confirmed := <-confirms; confirmed.Ack {
-		logging.Info("Message: %d, Accept Successfully!", confirmed.DeliveryTag)
+		logging.InfoF("Message: %d, Accept Successfully!", confirmed.DeliveryTag)
+		return nil
 	} else {
-		logging.FatalF("MessageL: %d, Failed Accept !", confirmed.DeliveryTag)
+		errInfo := fmt.Sprintf("Message: %d, Failed Accept !", confirmed.DeliveryTag)
+		logging.Fatal(errInfo)
+		return errors.New(errInfo)
 	}
 }
 
