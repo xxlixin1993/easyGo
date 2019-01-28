@@ -129,7 +129,7 @@ func (rp *redisPool) getSlaveConn(mysqlName string) (*redigo.Pool, error) {
 		return connSet.set[rand.Intn(connSet.count)].pool, nil
 	}
 
-	return nil, errors.New("[orm] cant find read connection")
+	return nil, errors.New("[cache] cant find read connection")
 }
 
 // 获取一个master的链接
@@ -138,7 +138,7 @@ func (rp *redisPool) getMasterConn(mysqlName string) (*redigo.Pool, error) {
 		return connSet.set[rand.Intn(connSet.count)].pool, nil
 	}
 
-	return nil, errors.New("[orm] cant find write connection")
+	return nil, errors.New("[cache] cant find write connection")
 }
 
 func newRedisPool() *redisPool {
