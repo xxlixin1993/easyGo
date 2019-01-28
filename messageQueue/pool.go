@@ -84,5 +84,5 @@ func (p *rabbitMqPool) Stop() error {
 
 // 获取退出程序名
 func (p *rabbitMqPool) GetModuleName() string {
-	return configure.KRedisModuleName
+	return configure.KInitRabbitMqModule
 }
