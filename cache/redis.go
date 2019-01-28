@@ -44,13 +44,15 @@ func InitRedis() error {
 	pool = newRedisPool()
 	redisNames := configure.DefaultStrings("redis.names", []string{})
 
-	if len(redisNames) > 0 {
-		for _, redisName := range redisNames {
-			for _, mode := range configure.Modes {
-				err := pool.connect(redisName, mode)
-				if err != nil {
-					return err
-				}
+	if len(redisNames) <= 0 {
+		return errors.New("[cache] Redis config error")
+	}
+
+	for _, redisName := range redisNames {
+		for _, mode := range configure.Modes {
+			err := pool.connect(redisName, mode)
+			if err != nil {
+				return err
 			}
 		}
 	}
