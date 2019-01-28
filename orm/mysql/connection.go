@@ -49,15 +49,16 @@ type (
 func InitDB() error {
 	allDB = newMysqlPool()
 	mysqlNames := configure.DefaultStrings("mysql.names", []string{})
-	if len(mysqlNames) > 0 {
-		for _, mysqlName := range mysqlNames {
-			for _, mode := range configure.Modes {
-				err := allDB.connect(mysqlName, mode)
-				if err != nil {
-					return err
-				}
-			}
+	if len(mysqlNames) <= 0 {
+		return errors.New("empty mysql config")
+	}
 
+	for _, mysqlName := range mysqlNames {
+		for _, mode := range configure.Modes {
+			err := allDB.connect(mysqlName, mode)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
