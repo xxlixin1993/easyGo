@@ -29,7 +29,7 @@ func NewProducerParam(exchange, exchangeType, routingKey string, reliable bool, 
 
 type producer struct {
 	conn    *shareConn
-	channel *safeChannel
+	channel *SafeChannel
 }
 
 // 创建生产者

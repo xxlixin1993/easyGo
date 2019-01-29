@@ -1,10 +1,15 @@
 package messageQueue
 
-import "github.com/streadway/amqp"
+import (
+	"fmt"
+	"github.com/streadway/amqp"
+)
 
-type HandlerFunc func(channel *safeChannel, delivery amqp.Delivery)
 
-func RpcServer(param *RpcParam, Handler HandlerFunc) error {
+type HandlerServer func(channel *SafeChannel, delivery amqp.Delivery)
+type HandlerClient func(corrId string, delivery amqp.Delivery)
+
+func RpcServer(queueName string, Handler HandlerServer) error {
 	shareConn, err := GetConnection()
 	if err != nil {
 		return err
@@ -14,7 +19,7 @@ func RpcServer(param *RpcParam, Handler HandlerFunc) error {
 		return err
 	}
 	queue, err := channel.QueueDeclare(
-		param.queueName, // rpcServer发送数据的Queue
+		queueName, // rpcServer发送数据的Queue
 		true,
 		false,
 		false,
@@ -24,11 +29,11 @@ func RpcServer(param *RpcParam, Handler HandlerFunc) error {
 	if err != nil {
 		return err
 	}
-	err = channel.Qos(
+	/*err = channel.Qos(
 		2,     //做多可以不确认的消息数，未确认消息若超过这个值，broker不会发送消息
 		0,     // 对消息大小的控制
 		false, //若为true: 表明作用于这个connection上的所有channel和消费者
-	)
+	)*/
 
 	if err != nil {
 		return err
@@ -44,11 +49,12 @@ func RpcServer(param *RpcParam, Handler HandlerFunc) error {
 		nil,
 	)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
-	for d := range msgs {
-		Handler(channel, d) //业务处理
+	for delivery := range msgs {
+		Handler(channel, delivery) //业务处理
 	}
 	return nil
 }

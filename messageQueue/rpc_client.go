@@ -5,14 +5,17 @@ import (
 	"math/rand"
 )
 
-type RpcParam struct {
+type rpcParam struct {
 	queueName string
 	body      []byte
 }
 
+func NewRpcParam(queueName string, body []byte) *rpcParam{
+	return &rpcParam{queueName:queueName, body: body}
+}
 
 
-func RpcClient(param *RpcParam, Handler HandlerFunc) error {
+func RpcClient(param *rpcParam, Handler HandlerClient) error {
 	shareConn, err := GetConnection()
 	if err != nil {
 		return err
@@ -45,8 +48,7 @@ func RpcClient(param *RpcParam, Handler HandlerFunc) error {
 	if err != nil {
 		return err
 	}
-	corId := randomString(32)
-
+	corrId := randomString(32)
 	channel.Publish(
 		"", // rpc模式下, 不需要指定交换器，使用默认的即可
 		param.queueName,
@@ -54,13 +56,13 @@ func RpcClient(param *RpcParam, Handler HandlerFunc) error {
 		false,
 		amqp.Publishing{
 			ContentType:   "text/plain",
-			CorrelationId: corId, // 请求标识
+			CorrelationId: corrId, // 请求标识
 			ReplyTo:       queue.Name,
 			Body:          param.body,
 		},
 	)
 	for delivery := range msgs {
-		Handler(channel, delivery)
+		Handler(corrId, delivery)
 	}
 	return nil
 }

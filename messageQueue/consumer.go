@@ -96,7 +96,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 
 type consumer struct {
 	conn    *shareConn
-	channel *safeChannel
+	channel *SafeChannel
 	tag     string
 }
 
