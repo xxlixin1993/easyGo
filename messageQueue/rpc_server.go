@@ -29,11 +29,11 @@ func RpcServer(queueName string, Handler HandlerServer) error {
 	if err != nil {
 		return err
 	}
-	/*err = channel.Qos(
+	err = channel.Qos(
 		2,     //做多可以不确认的消息数，未确认消息若超过这个值，broker不会发送消息
 		0,     // 对消息大小的控制
 		false, //若为true: 表明作用于这个connection上的所有channel和消费者
-	)*/
+	)
 
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func RpcServer(queueName string, Handler HandlerServer) error {
 	msgs, err := channel.Consume(
 		queue.Name,
 		"", //rpc 模式下, 不需要consumer标识
-		true,
+		false,
 		false,
 		false,
 		false,

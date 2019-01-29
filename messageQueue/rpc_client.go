@@ -63,6 +63,7 @@ func RpcClient(param *rpcParam, Handler HandlerClient) error {
 	)
 	for delivery := range msgs {
 		Handler(corrId, delivery)
+		break;
 	}
 	return nil
 }
