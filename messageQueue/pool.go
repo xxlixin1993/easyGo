@@ -23,7 +23,7 @@ type rabbitMqPool struct {
 
 //实例化连接池对象
 func InitMq() error {
-	size := configure.DefaultInt("rabbitMqPool.size", 5)
+	size := configure.DefaultInt("rabbitmq_pool.size", 5)
 	rabbitPool = &rabbitMqPool{size: size}
 
 	if err := rabbitPool.initialize(); err != nil {
@@ -34,7 +34,7 @@ func InitMq() error {
 
 //初始化rabbitMq连接池
 func (p *rabbitMqPool) initialize() error {
-	dsn := configure.DefaultString("rabbitMq.dsn", "amqp://guest:guest@localhost:5672")
+	dsn := configure.DefaultString("rabbitmq.dsn", "amqp://guest:guest@localhost:5672")
 	for i := 0; i < rabbitPool.size; i++ {
 		connection, err := amqp.Dial(dsn)
 		if err != nil {
@@ -84,5 +84,5 @@ func (p *rabbitMqPool) Stop() error {
 
 // 获取退出程序名
 func (p *rabbitMqPool) GetModuleName() string {
-	return configure.KRedisModuleName
+	return configure.KInitRabbitMqModule
 }

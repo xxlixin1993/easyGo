@@ -44,13 +44,15 @@ func InitRedis() error {
 	pool = newRedisPool()
 	redisNames := configure.DefaultStrings("redis.names", []string{})
 
-	if len(redisNames) > 0 {
-		for _, redisName := range redisNames {
-			for _, mode := range configure.Modes {
-				err := pool.connect(redisName, mode)
-				if err != nil {
-					return err
-				}
+	if len(redisNames) <= 0 {
+		return errors.New("[cache] Redis config error")
+	}
+
+	for _, redisName := range redisNames {
+		for _, mode := range configure.Modes {
+			err := pool.connect(redisName, mode)
+			if err != nil {
+				return err
 			}
 		}
 	}
@@ -129,7 +131,7 @@ func (rp *redisPool) getSlaveConn(mysqlName string) (*redigo.Pool, error) {
 		return connSet.set[rand.Intn(connSet.count)].pool, nil
 	}
 
-	return nil, errors.New("[orm] cant find read connection")
+	return nil, errors.New("[cache] cant find read connection")
 }
 
 // 获取一个master的链接
@@ -138,7 +140,7 @@ func (rp *redisPool) getMasterConn(mysqlName string) (*redigo.Pool, error) {
 		return connSet.set[rand.Intn(connSet.count)].pool, nil
 	}
 
-	return nil, errors.New("[orm] cant find write connection")
+	return nil, errors.New("[cache] cant find write connection")
 }
 
 func newRedisPool() *redisPool {
