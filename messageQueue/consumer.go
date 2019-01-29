@@ -13,6 +13,8 @@ type consumerParam struct {
 	consumerTag  string //消费者的标识
 }
 
+
+
 //创建消费者所需参数
 func NewConsumerParam(exchange, exchangeType, queueName, bindingKey string) *consumerParam {
 
@@ -46,11 +48,11 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 	if err = c.channel.ExchangeDeclare(
 		paramInfo.exchange,     //交换器名称
 		paramInfo.exchangeType, //交换器类型(fanout, direct, topic ,header)
-		true,  // 是否持久化
-		false, // 是否自动删除交换器(前提是至少有一个交换器/队列与之相连接)
-		false, //是否为内部使用，不对外
-		false, // 是否等待服务端的确认
-		nil,   //额外参数
+		true,                   // 是否持久化
+		false,                  // 是否自动删除交换器(前提是至少有一个交换器/队列与之相连接)
+		false,                  //是否为内部使用，不对外
+		false,                  // 是否等待服务端的确认
+		nil,                    //额外参数
 	); err != nil {
 		return nil, err
 	}
@@ -64,7 +66,6 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		nil,
 	)
 	if err != nil {
-
 		return nil, err
 	}
 
@@ -85,7 +86,7 @@ func (c *consumer) Consume(paramInfo *consumerParam) (<-chan amqp.Delivery, erro
 		false,      //是否排他, true:不会发给其他的消费者
 		false,      //The noLocal flag is not supported by RabbitMQ.
 		false,      // 是否等待服务端的确认
-		nil)        //额外参数
+		nil) //额外参数
 
 	if err != nil {
 		return nil, err
@@ -98,6 +99,8 @@ type consumer struct {
 	channel *safeChannel
 	tag     string
 }
+
+
 
 func (c *consumer) shutdown() error {
 
