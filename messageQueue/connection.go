@@ -30,7 +30,7 @@ func GetConnection() (*shareConn, error) {
 
 func (c *shareConn) ReConnect() (*amqp.Connection, error) {
 	var errBack error
-	dsn := configure.DefaultString("rabbitMq.dsn", "amqp://guest:guest@localhost:5672")
+	dsn := configure.DefaultString("rabbitmq.dsn", "amqp://guest:guest@localhost:5672")
 	for i := 0; i < c.maxReConn; i++ {
 		connection, err := amqp.Dial(dsn)
 		if err != nil {
