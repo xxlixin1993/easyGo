@@ -12,13 +12,14 @@ func main() {
 	easyGo.InitFrame()
 	easyGo.InitMq()
 	rpcParam := messageQueue.NewRpcParam("rpctest", []byte("what fuck!"))
-	err := messageQueue.RpcClient(rpcParam, func(corrId string, delivery amqp.Delivery) {
+	res, err := messageQueue.RpcClient(rpcParam, func(corrId string, delivery amqp.Delivery) interface{} {
 		if corrId == delivery.CorrelationId {
 			fmt.Println(string(delivery.Body))
+			return string(delivery.Body)
 		}
-
+		return nil
 	})
-
+	fmt.Println(res)
 	if err != nil {
 		log.Fatal(err)
 	}

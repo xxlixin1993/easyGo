@@ -48,10 +48,8 @@ func RpcClient(param *rpcParam, Handler HandlerClient) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	corrId, err := uuid.NewV4()
-	if err != nil{
-		return nil, errors.New(ErrUUidCreateFailed)
-	}
+	corrId := uuid.NewV4()
+
 	channel.Publish(
 		"", // rpc模式下, 不需要指定交换器，使用默认的即可
 		param.queueName,
@@ -70,4 +68,3 @@ func RpcClient(param *rpcParam, Handler HandlerClient) (interface{}, error) {
 
 	return nil, errors.New(ErrRpcClientConsumeFailed)
 }
-
