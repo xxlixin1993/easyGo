@@ -162,7 +162,6 @@ func newConnection(mysqlName string, mode string, indexStr string, modeType uint
 	maxIdleConns := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_idle_conn", 10)
 	maxOpenConns := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_open_conn", 100)
 	maxLifetime := configure.DefaultInt(mysqlName+"."+mode+"."+indexStr+".max_life_time", 300)
-
 	conn, err := gorm.Open("mysql", dsn)
 	if err != nil {
 		return nil, err

@@ -1,13 +1,11 @@
 package messageQueue
 
 import (
-	"fmt"
 	"github.com/streadway/amqp"
 )
 
-
 type HandlerServer func(channel *SafeChannel, delivery amqp.Delivery)
-type HandlerClient func(corrId string, delivery amqp.Delivery)
+type HandlerClient func(corrId string, delivery amqp.Delivery) interface{}
 
 func RpcServer(queueName string, Handler HandlerServer) error {
 	shareConn, err := GetConnection()
@@ -30,7 +28,7 @@ func RpcServer(queueName string, Handler HandlerServer) error {
 		return err
 	}
 	err = channel.Qos(
-		2,     //做多可以不确认的消息数，未确认消息若超过这个值，broker不会发送消息
+		2,     //最多可以不确认的消息数，未确认消息若超过这个值，broker不会发送消息
 		0,     // 对消息大小的控制
 		false, //若为true: 表明作用于这个connection上的所有channel和消费者
 	)
@@ -49,7 +47,6 @@ func RpcServer(queueName string, Handler HandlerServer) error {
 		nil,
 	)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 

@@ -7,7 +7,6 @@ import (
 
 //安全Channel会做重连，更新连接池，记录日志等
 
-
 type SafeChannel struct {
 	originChannel *amqp.Channel
 	position      int8
