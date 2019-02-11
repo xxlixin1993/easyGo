@@ -10,12 +10,13 @@ type rpcParam struct {
 	queueName string
 	body      []byte
 }
+type HandlerClient func(corrId string, delivery amqp.Delivery) (interface{}, error)
 
 func NewRpcParam(queueName string, body []byte) *rpcParam {
 	return &rpcParam{queueName: queueName, body: body}
 }
 
-func RpcClient(param *rpcParam, Handler HandlerClient) (interface{}, error) {
+func RpcClient(param *rpcParam, handler HandlerClient) (interface{}, error) {
 	shareConn, err := GetConnection()
 	if err != nil {
 		return nil, err
@@ -63,7 +64,7 @@ func RpcClient(param *rpcParam, Handler HandlerClient) (interface{}, error) {
 		},
 	)
 	for delivery := range msgs {
-		return Handler(corrId.String(), delivery), nil
+		return handler(corrId.String(), delivery)
 	}
 
 	return nil, errors.New(ErrRpcClientConsumeFailed)

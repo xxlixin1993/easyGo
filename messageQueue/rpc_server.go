@@ -5,9 +5,8 @@ import (
 )
 
 type HandlerServer func(channel *SafeChannel, delivery amqp.Delivery)
-type HandlerClient func(corrId string, delivery amqp.Delivery) interface{}
 
-func RpcServer(queueName string, Handler HandlerServer) error {
+func RpcServer(queueName string, handler HandlerServer) error {
 	shareConn, err := GetConnection()
 	if err != nil {
 		return err
@@ -51,7 +50,7 @@ func RpcServer(queueName string, Handler HandlerServer) error {
 	}
 
 	for delivery := range msgs {
-		Handler(channel, delivery) //业务处理
+		handler(channel, delivery) //业务处理
 	}
 	return nil
 }
