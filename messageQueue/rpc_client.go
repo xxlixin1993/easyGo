@@ -12,6 +12,7 @@ type rpcParam struct {
 }
 type HandlerClient func(corrId string, delivery amqp.Delivery) (interface{}, error)
 
+// queueName 指定rpc模式下,client
 func NewRpcParam(queueName string, body []byte) *rpcParam {
 	return &rpcParam{queueName: queueName, body: body}
 }
