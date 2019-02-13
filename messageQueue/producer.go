@@ -15,7 +15,7 @@ type producerParam struct {
 	publishing   amqp.Publishing
 }
 
-//创建发布者所需参数
+// 创建发布者所需参数
 func NewProducerParam(exchange, exchangeType, routingKey string, reliable bool, publishing amqp.Publishing) *producerParam {
 
 	return &producerParam{

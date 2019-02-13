@@ -5,8 +5,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-//安全Channel会做重连，更新连接池，记录日志等
-
+// 安全Channel会做重连，更新连接池，记录日志等
 type SafeChannel struct {
 	originChannel *amqp.Channel
 	position      int8
@@ -15,7 +14,7 @@ type SafeChannel struct {
 func (c *shareConn) Channel() (*SafeChannel, error) {
 	channel, err := c.conn.Channel()
 	if err == amqp.ErrClosed {
-		//若为连接错误，重试3次
+		// 若为连接错误，重试3次
 		connection, err := c.ReConnect()
 		if err == amqp.ErrClosed {
 			return nil, errors.New(ErrFailedRecreateConnection)

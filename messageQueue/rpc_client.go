@@ -27,7 +27,7 @@ func RpcClient(param *rpcParam, handler HandlerClient) (interface{}, error) {
 		return nil, err
 	}
 	queue, err := channel.QueueDeclare(
-		"", //rpcClient 模式，系统会默认生成队列的唯一标识名称
+		"", // rpcClient 模式，系统会默认生成队列的唯一标识名称
 		true,
 		false,
 		false,
@@ -40,7 +40,7 @@ func RpcClient(param *rpcParam, handler HandlerClient) (interface{}, error) {
 
 	msgs, err := channel.Consume(
 		queue.Name,
-		"", //消费者为空
+		"", // 消费者为空
 		true,
 		false,
 		false,

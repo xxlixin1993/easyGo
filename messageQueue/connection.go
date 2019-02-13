@@ -13,12 +13,12 @@ type shareConn struct {
 	isReachable bool // 连接是否可达
 }
 
-//共享连接是对底层amqp连接的封装, 记录连接在池中的位置，便于池中连接数的管理(剔除)
+// 共享连接是对底层amqp连接的封装, 记录连接在池中的位置，便于池中连接数的管理(剔除)
 func newShareConn(id int8, conn *amqp.Connection) *shareConn {
 	return &shareConn{position: id, conn: conn}
 }
 
-//获取连接
+// 获取连接
 func GetConnection() (*shareConn, error) {
 	if !rabbitPool.initialized {
 		return nil, errors.New(ErrNoInitConnectionPool)

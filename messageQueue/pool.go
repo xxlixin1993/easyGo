@@ -13,7 +13,7 @@ type connections []*amqp.Connection
 
 var rabbitPool *rabbitMqPool
 
-//基于Slice的连接池
+// 基于Slice的连接池
 type rabbitMqPool struct {
 	size        int
 	initialized bool
@@ -21,7 +21,7 @@ type rabbitMqPool struct {
 	rw          sync.RWMutex
 }
 
-//实例化连接池对象
+// 实例化连接池对象
 func InitMq() error {
 	size := configure.DefaultInt("rabbitmq_pool.size", 5)
 	rabbitPool = &rabbitMqPool{size: size}
@@ -32,7 +32,7 @@ func InitMq() error {
 	return gracefulExit.GetExitList().UnShift(rabbitPool)
 }
 
-//初始化rabbitMq连接池
+// 初始化rabbitMq连接池
 func (p *rabbitMqPool) initialize() error {
 	dsn := configure.DefaultString("rabbitmq.dsn", "amqp://guest:guest@localhost:5672")
 	for i := 0; i < rabbitPool.size; i++ {
